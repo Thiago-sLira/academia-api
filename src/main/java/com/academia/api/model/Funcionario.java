@@ -3,6 +3,8 @@ package com.academia.api.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
@@ -33,7 +35,8 @@ public class Funcionario {
     private String registroAcademico;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 30)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(columnDefinition = "perfil_enum")
     private PerfilFuncionario perfil;
 
     private Boolean ativo = true;

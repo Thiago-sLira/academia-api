@@ -3,6 +3,7 @@ package com.academia.api.service;
 import com.academia.api.dto.FuncionarioRequestDTO;
 import com.academia.api.dto.FuncionarioResponseDTO;
 import com.academia.api.dto.LoginRequestDTO;
+import com.academia.api.exception.CredenciaisInvalidasException;
 import com.academia.api.model.Funcionario;
 import com.academia.api.repository.FuncionarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -73,10 +74,10 @@ public class FuncionarioService {
 
     public FuncionarioResponseDTO login(LoginRequestDTO dto) {
         Funcionario funcionario = repository.findByEmail(dto.email())
-                .orElseThrow(() -> new RuntimeException("Credenciais inválidas"));
+                .orElseThrow(CredenciaisInvalidasException::new);
 
         if (!passwordEncoder.matches(dto.senha(), funcionario.getSenha())) {
-            throw new RuntimeException("Credenciais inválidas");
+            throw new CredenciaisInvalidasException();
         }
 
         return new FuncionarioResponseDTO(funcionario);
