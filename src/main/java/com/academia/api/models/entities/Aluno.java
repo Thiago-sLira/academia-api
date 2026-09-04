@@ -1,5 +1,7 @@
-package com.academia.api.model;
+package com.academia.api.models.entities;
 
+import com.academia.api.models.enums.Genero;
+import com.academia.api.models.enums.NivelExperiencia;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -61,9 +63,9 @@ public class Aluno {
 
     @CreationTimestamp
     @Column(name = "criado_em", updatable = false)
-    private LocalDateTime criadoEm;
+    private LocalDateTime timestampCriacao;
 
     @UpdateTimestamp
     @Column(name = "atualizado_em")
-    private LocalDateTime atualizadoEm;
+    private LocalDateTime timestampUltimaAtualizacao;
 }

@@ -1,6 +1,6 @@
-package com.academia.api.repository;
+package com.academia.api.repositories;
 
-import com.academia.api.model.Funcionario;
+import com.academia.api.models.entities.Funcionario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

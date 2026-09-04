@@ -1,11 +1,11 @@
-package com.academia.api.service;
+package com.academia.api.services;
 
-import com.academia.api.dto.FuncionarioRequestDTO;
-import com.academia.api.dto.FuncionarioResponseDTO;
-import com.academia.api.dto.LoginRequestDTO;
+import com.academia.api.dto.requests.FuncionarioRequestDTO;
+import com.academia.api.dto.responses.FuncionarioResponseDTO;
+import com.academia.api.dto.requests.LoginRequestDTO;
 import com.academia.api.exception.CredenciaisInvalidasException;
-import com.academia.api.model.Funcionario;
-import com.academia.api.repository.FuncionarioRepository;
+import com.academia.api.models.entities.Funcionario;
+import com.academia.api.repositories.FuncionarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

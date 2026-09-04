@@ -1,4 +1,4 @@
-package com.academia.api.model;
+package com.academia.api.models.enums;
 
 public enum PerfilFuncionario {
     PROFESSOR, ADMIN, ALUNO

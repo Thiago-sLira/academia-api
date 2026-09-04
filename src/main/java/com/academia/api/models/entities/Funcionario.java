@@ -1,5 +1,6 @@
-package com.academia.api.model;
+package com.academia.api.models.entities;
 
+import com.academia.api.models.enums.PerfilFuncionario;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

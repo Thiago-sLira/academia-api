@@ -1,8 +1,8 @@
-package com.academia.api.dto;
+package com.academia.api.dto.responses;
 
-import com.academia.api.model.Aluno;
-import com.academia.api.model.Genero;
-import com.academia.api.model.NivelExperiencia;
+import com.academia.api.models.entities.Aluno;
+import com.academia.api.models.enums.Genero;
+import com.academia.api.models.enums.NivelExperiencia;
 
 import java.math.BigDecimal;
 

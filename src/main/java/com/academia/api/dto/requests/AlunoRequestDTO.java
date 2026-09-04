@@ -1,7 +1,7 @@
-package com.academia.api.dto;
+package com.academia.api.dto.requests;
 
-import com.academia.api.model.Genero;
-import com.academia.api.model.NivelExperiencia;
+import com.academia.api.models.enums.Genero;
+import com.academia.api.models.enums.NivelExperiencia;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 

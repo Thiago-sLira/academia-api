@@ -1,9 +1,9 @@
 package com.academia.api.controller;
 
-import com.academia.api.dto.FuncionarioRequestDTO;
-import com.academia.api.dto.FuncionarioResponseDTO;
-import com.academia.api.dto.LoginRequestDTO;
-import com.academia.api.service.FuncionarioService;
+import com.academia.api.dto.requests.FuncionarioRequestDTO;
+import com.academia.api.dto.responses.FuncionarioResponseDTO;
+import com.academia.api.dto.requests.LoginRequestDTO;
+import com.academia.api.services.FuncionarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

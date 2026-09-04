@@ -1,7 +1,7 @@
-package com.academia.api.dto;
+package com.academia.api.dto.responses;
 
-import com.academia.api.model.Funcionario;
-import com.academia.api.model.PerfilFuncionario;
+import com.academia.api.models.entities.Funcionario;
+import com.academia.api.models.enums.PerfilFuncionario;
 
 import java.time.LocalDateTime;
 

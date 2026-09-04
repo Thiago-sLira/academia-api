@@ -1,8 +1,8 @@
 package com.academia.api.controller;
 
-import com.academia.api.dto.AlunoRequestDTO;
-import com.academia.api.dto.AlunoResponseDTO;
-import com.academia.api.service.AlunoService;
+import com.academia.api.dto.requests.AlunoRequestDTO;
+import com.academia.api.dto.responses.AlunoResponseDTO;
+import com.academia.api.services.AlunoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
