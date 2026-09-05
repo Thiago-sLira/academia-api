@@ -5,8 +5,11 @@ import com.academia.api.dtos.requests.LoginRequestDTO;
 import com.academia.api.dtos.responses.FuncionarioResponseDTO;
 import com.academia.api.dtos.responses.LoginResponseDTO;
 import com.academia.api.exceptions.CredenciaisInvalidasException;
+import com.academia.api.exceptions.FuncionarioNaoEncontradoException;
 import com.academia.api.models.entities.Funcionario;
+import com.academia.api.models.enums.PerfilFuncionario;
 import com.academia.api.repositories.FuncionarioRepository;
+import com.academia.api.validation.EnumNormalizer;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +36,7 @@ public class FuncionarioService {
                 .email(dto.email())
                 .senha(passwordEncoder.encode(dto.senha()))
                 .registroAcademico(dto.registroAcademico())
-                .perfil(dto.perfil())
+                .perfil(EnumNormalizer.parseEnum(PerfilFuncionario.class, dto.perfil()).orElse(null))
                 .ativo(true)
                 .build();
 
@@ -50,19 +53,19 @@ public class FuncionarioService {
 
     public FuncionarioResponseDTO buscarPorId(Long id) {
         Funcionario funcionario = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Funcionário não encontrado com id: " + id));
+                .orElseThrow(() -> new FuncionarioNaoEncontradoException(id));
         return new FuncionarioResponseDTO(funcionario);
     }
 
     @Transactional
     public FuncionarioResponseDTO atualizar(Long id, FuncionarioRequestDTO dto) {
         Funcionario funcionario = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Funcionário não encontrado com id: " + id));
+                .orElseThrow(() -> new FuncionarioNaoEncontradoException(id));
 
         funcionario.setNome(dto.nome());
         funcionario.setEmail(dto.email());
         funcionario.setRegistroAcademico(dto.registroAcademico());
-        funcionario.setPerfil(dto.perfil());
+        funcionario.setPerfil(EnumNormalizer.parseEnum(PerfilFuncionario.class, dto.perfil()).orElse(null));
 
         return new FuncionarioResponseDTO(repository.save(funcionario));
     }
@@ -70,7 +73,7 @@ public class FuncionarioService {
     @Transactional
     public void deletar(Long id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException("Funcionário não encontrado com id: " + id);
+            throw new FuncionarioNaoEncontradoException(id);
         }
         repository.deleteById(id);
     }

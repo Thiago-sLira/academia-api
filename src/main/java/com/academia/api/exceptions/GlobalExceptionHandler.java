@@ -91,4 +91,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErroRespostaDTO(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
     }
+
+    @ExceptionHandler(FuncionarioNaoEncontradoException.class)
+    public ResponseEntity<ErroRespostaDTO> handleFuncionarioNaoEncontrado(FuncionarioNaoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErroRespostaDTO(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
+    }
 }
