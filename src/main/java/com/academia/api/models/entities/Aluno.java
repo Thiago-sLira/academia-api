@@ -5,9 +5,9 @@ import com.academia.api.models.enums.NivelExperiencia;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -44,12 +44,12 @@ public class Aluno {
     private BigDecimal altura;
 
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     @Column(columnDefinition = "genero_enum")
     private Genero genero;
 
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     @Column(name = "nivel_experiencia", columnDefinition = "nivel_experiencia")
     private NivelExperiencia nivelExperiencia;
 

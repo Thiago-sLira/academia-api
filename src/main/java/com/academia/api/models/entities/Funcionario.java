@@ -4,8 +4,8 @@ import com.academia.api.models.enums.PerfilFuncionario;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.time.LocalDateTime;
 
@@ -36,7 +36,7 @@ public class Funcionario {
     private String registroAcademico;
 
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     @Column(columnDefinition = "perfil_enum")
     private PerfilFuncionario perfil;
 

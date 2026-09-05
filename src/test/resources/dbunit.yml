@@ -1,0 +1,6 @@
+cacheConnection: true
+leakHunter: false
+caseInsensitiveStrategy: LOWERCASE
+disableSequenceFiltering: true
+properties:
+  schema: "PUBLIC"

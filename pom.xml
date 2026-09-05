@@ -60,6 +60,21 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- H2 Database para Testes de Integração -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Database Rider para Datasets nos Testes de Integração -->
+        <dependency>
+            <groupId>com.github.database-rider</groupId>
+            <artifactId>rider-spring</artifactId>
+            <version>1.44.0</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
