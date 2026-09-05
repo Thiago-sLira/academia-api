@@ -1,7 +1,7 @@
-package com.academia.api.exception;
+package com.academia.api.exceptions;
 
-import com.academia.api.dto.responses.CampoErroDTO;
-import com.academia.api.dto.responses.ErroRespostaDTO;
+import com.academia.api.exceptions.dtos.CampoErroDTO;
+import com.academia.api.exceptions.dtos.ErroRespostaDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

@@ -1,7 +1,7 @@
 package com.academia.api.services;
 
-import com.academia.api.dto.requests.AlunoRequestDTO;
-import com.academia.api.dto.responses.AlunoResponseDTO;
+import com.academia.api.dtos.requests.AlunoRequestDTO;
+import com.academia.api.dtos.responses.AlunoResponseDTO;
 import com.academia.api.models.entities.Aluno;
 import com.academia.api.repositories.AlunoRepository;
 import org.springframework.stereotype.Service;

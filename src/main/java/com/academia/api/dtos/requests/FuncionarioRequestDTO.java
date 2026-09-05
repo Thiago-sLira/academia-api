@@ -1,4 +1,4 @@
-package com.academia.api.dto.requests;
+package com.academia.api.dtos.requests;
 
 import com.academia.api.models.enums.PerfilFuncionario;
 import jakarta.validation.constraints.Email;

@@ -1,7 +1,7 @@
-package com.academia.api.controller;
+package com.academia.api.aluno;
 
 import com.academia.api.BaseIntegrationTest;
-import com.academia.api.dto.requests.AlunoRequestDTO;
+import com.academia.api.dtos.requests.AlunoRequestDTO;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class AlunoPostIntegrationTest extends BaseIntegrationTest {
+class CadastrarAlunoIntegrationTest extends BaseIntegrationTest {
 
     private static final String URL_ALUNOS = "/api/alunos";
 

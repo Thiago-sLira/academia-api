@@ -1,4 +1,4 @@
-package com.academia.api.exception;
+package com.academia.api.exceptions;
 
 public class CredenciaisInvalidasException extends RuntimeException {
 

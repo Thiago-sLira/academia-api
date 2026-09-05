@@ -1,7 +1,7 @@
-package com.academia.api.controller;
+package com.academia.api.funcionario;
 
 import com.academia.api.BaseIntegrationTest;
-import com.academia.api.dto.requests.LoginRequestDTO;
+import com.academia.api.dtos.requests.LoginRequestDTO;
 import com.academia.api.models.entities.Funcionario;
 import com.academia.api.models.enums.PerfilFuncionario;
 import com.academia.api.repositories.FuncionarioRepository;

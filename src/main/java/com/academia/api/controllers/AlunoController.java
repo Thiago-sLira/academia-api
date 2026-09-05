@@ -1,7 +1,7 @@
-package com.academia.api.controller;
+package com.academia.api.controllers;
 
-import com.academia.api.dto.requests.AlunoRequestDTO;
-import com.academia.api.dto.responses.AlunoResponseDTO;
+import com.academia.api.dtos.requests.AlunoRequestDTO;
+import com.academia.api.dtos.responses.AlunoResponseDTO;
 import com.academia.api.services.AlunoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

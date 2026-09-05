@@ -1,9 +1,9 @@
-package com.academia.api.controller;
+package com.academia.api.controllers;
 
-import com.academia.api.dto.requests.FuncionarioRequestDTO;
-import com.academia.api.dto.requests.LoginRequestDTO;
-import com.academia.api.dto.responses.FuncionarioResponseDTO;
-import com.academia.api.dto.responses.LoginResponseDTO;
+import com.academia.api.dtos.requests.FuncionarioRequestDTO;
+import com.academia.api.dtos.requests.LoginRequestDTO;
+import com.academia.api.dtos.responses.FuncionarioResponseDTO;
+import com.academia.api.dtos.responses.LoginResponseDTO;
 import com.academia.api.services.FuncionarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

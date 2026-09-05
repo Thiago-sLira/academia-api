@@ -1,4 +1,4 @@
-package com.academia.api.dto.responses;
+package com.academia.api.dtos.responses;
 
 import com.academia.api.models.enums.PerfilFuncionario;
 
