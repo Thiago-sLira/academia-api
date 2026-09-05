@@ -59,6 +59,7 @@ public class Aluno {
     @Column(name = "restricao_medica", columnDefinition = "TEXT")
     private String restricaoMedica;
 
+    @Builder.Default
     private Boolean ativo = true;
 
     @CreationTimestamp

@@ -1,0 +1,8 @@
+funcionarios:
+  - id: 1
+    nome: "Admin Teste"
+    email: "admin@academia.com"
+    senha: "$2a$10$w8k2u71qYwIqv1eTsqw66.B8qVwWjN7zD1v8Jk2sP/v1wB8qVwWjN" # "senha123" codificada com BCrypt
+    registro_academico: "ADM-001"
+    perfil: "ADMINISTRADOR"
+    ativo: true

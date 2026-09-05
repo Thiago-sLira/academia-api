@@ -13,7 +13,7 @@
 
     <groupId>com.academia</groupId>
     <artifactId>academia-api</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>academia-api</name>
     <description>API de Gestão de Academia</description>
 

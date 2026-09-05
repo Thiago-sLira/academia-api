@@ -40,6 +40,7 @@ public class Funcionario {
     @Column(columnDefinition = "perfil_enum")
     private PerfilFuncionario perfil;
 
+    @Builder.Default
     private Boolean ativo = true;
 
     @CreationTimestamp

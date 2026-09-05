@@ -27,8 +27,8 @@ public class AlunoService {
                 .idade(dto.idade())
                 .peso(dto.peso())
                 .altura(dto.altura())
-                .genero(dto.genero())
-                .nivelExperiencia(dto.nivelExperiencia())
+                .genero(com.academia.api.validation.EnumNormalizer.parseEnum(com.academia.api.models.enums.Genero.class, dto.genero()).orElse(null))
+                .nivelExperiencia(com.academia.api.validation.EnumNormalizer.parseEnum(com.academia.api.models.enums.NivelExperiencia.class, dto.nivelExperiencia()).orElse(null))
                 .diasDisponiveisSemana(dto.diasDisponiveisSemana())
                 .restricaoMedica(dto.restricaoMedica())
                 .ativo(true)
@@ -58,8 +58,8 @@ public class AlunoService {
         aluno.setIdade(dto.idade());
         aluno.setPeso(dto.peso());
         aluno.setAltura(dto.altura());
-        aluno.setGenero(dto.genero());
-        aluno.setNivelExperiencia(dto.nivelExperiencia());
+        aluno.setGenero(com.academia.api.validation.EnumNormalizer.parseEnum(com.academia.api.models.enums.Genero.class, dto.genero()).orElse(null));
+        aluno.setNivelExperiencia(com.academia.api.validation.EnumNormalizer.parseEnum(com.academia.api.models.enums.NivelExperiencia.class, dto.nivelExperiencia()).orElse(null));
         aluno.setDiasDisponiveisSemana(dto.diasDisponiveisSemana());
         aluno.setRestricaoMedica(dto.restricaoMedica());
 

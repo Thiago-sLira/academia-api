@@ -36,6 +36,38 @@ public class JwtService {
                 .compact();
     }
 
+    public boolean isTokenValido(String token) {
+        try {
+            return !isTokenExpirado(token);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public String extrairEmail(String token) {
+        return extrairClaims(token).getSubject();
+    }
+
+    public String extrairPerfil(String token) {
+        return extrairClaims(token).get("perfil", String.class);
+    }
+
+    public Long extrairId(String token) {
+        return extrairClaims(token).get("id", Long.class);
+    }
+
+    private boolean isTokenExpirado(String token) {
+        return extrairClaims(token).getExpiration().before(new Date());
+    }
+
+    private io.jsonwebtoken.Claims extrairClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);

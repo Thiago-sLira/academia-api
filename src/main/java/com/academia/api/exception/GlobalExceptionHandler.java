@@ -1,30 +1,57 @@
 package com.academia.api.exception;
 
+import com.academia.api.dto.responses.CampoErroDTO;
+import com.academia.api.dto.responses.ErroRespostaDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErroRespostaDTO> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+        List<CampoErroDTO> detalhes = new ArrayList<>();
+
+        for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
+            String defaultMessage = fieldError.getDefaultMessage();
+            String campo = fieldError.getField();
+
+            if (defaultMessage != null && defaultMessage.startsWith("Valores aceitos:")) {
+                detalhes.add(new CampoErroDTO(
+                        campo,
+                        String.format("Valor inválido para o campo '%s'", campo),
+                        defaultMessage
+                ));
+            } else {
+                detalhes.add(new CampoErroDTO(campo, defaultMessage));
+            }
+        }
+
+        ErroRespostaDTO resposta = new ErroRespostaDTO(
+                HttpStatus.BAD_REQUEST.value(),
+                "Erro de validação nos campos informados",
+                detalhes
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resposta);
+    }
+
     @ExceptionHandler(CredenciaisInvalidasException.class)
-    public ResponseEntity<Map<String, Object>> handleCredenciaisInvalidas(CredenciaisInvalidasException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(erroBody(ex.getMessage()));
+    public ResponseEntity<ErroRespostaDTO> handleCredenciaisInvalidas(CredenciaisInvalidasException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ErroRespostaDTO(HttpStatus.UNAUTHORIZED.value(), ex.getMessage()));
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erroBody(ex.getMessage()));
-    }
-
-    private Map<String, Object> erroBody(String mensagem) {
-        return Map.of(
-                "timestamp", LocalDateTime.now().toString(),
-                "erro", mensagem
-        );
+    public ResponseEntity<ErroRespostaDTO> handleRuntimeException(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErroRespostaDTO(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
     }
 }

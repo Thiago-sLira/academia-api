@@ -2,7 +2,7 @@ tb_aluno:
   - id_aluno: 1
     nome: "Maria Souza"
     email: "maria.souza@email.com"
-    telefone: null
+    telefone: "11999998888"
     idade: null
     peso: null
     altura: null
