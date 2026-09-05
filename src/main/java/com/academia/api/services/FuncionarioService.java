@@ -1,8 +1,9 @@
 package com.academia.api.services;
 
 import com.academia.api.dto.requests.FuncionarioRequestDTO;
-import com.academia.api.dto.responses.FuncionarioResponseDTO;
 import com.academia.api.dto.requests.LoginRequestDTO;
+import com.academia.api.dto.responses.FuncionarioResponseDTO;
+import com.academia.api.dto.responses.LoginResponseDTO;
 import com.academia.api.exception.CredenciaisInvalidasException;
 import com.academia.api.models.entities.Funcionario;
 import com.academia.api.repositories.FuncionarioRepository;
@@ -17,10 +18,12 @@ public class FuncionarioService {
 
     private final FuncionarioRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public FuncionarioService(FuncionarioRepository repository, PasswordEncoder passwordEncoder) {
+    public FuncionarioService(FuncionarioRepository repository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @Transactional
@@ -72,7 +75,7 @@ public class FuncionarioService {
         repository.deleteById(id);
     }
 
-    public FuncionarioResponseDTO login(LoginRequestDTO dto) {
+    public LoginResponseDTO login(LoginRequestDTO dto) {
         Funcionario funcionario = repository.findByEmail(dto.email())
                 .orElseThrow(CredenciaisInvalidasException::new);
 
@@ -80,6 +83,14 @@ public class FuncionarioService {
             throw new CredenciaisInvalidasException();
         }
 
-        return new FuncionarioResponseDTO(funcionario);
+        String token = jwtService.gerarToken(funcionario);
+
+        return new LoginResponseDTO(
+                token,
+                funcionario.getId(),
+                funcionario.getNome(),
+                funcionario.getEmail(),
+                funcionario.getPerfil()
+        );
     }
 }

@@ -1,8 +1,9 @@
 package com.academia.api.controller;
 
 import com.academia.api.dto.requests.FuncionarioRequestDTO;
-import com.academia.api.dto.responses.FuncionarioResponseDTO;
 import com.academia.api.dto.requests.LoginRequestDTO;
+import com.academia.api.dto.responses.FuncionarioResponseDTO;
+import com.academia.api.dto.responses.LoginResponseDTO;
 import com.academia.api.services.FuncionarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -61,7 +62,7 @@ public class FuncionarioController {
 
     @PostMapping("/login")
     @Operation(summary = "Autenticar funcionário por email e senha")
-    public ResponseEntity<FuncionarioResponseDTO> login(@RequestBody @Valid LoginRequestDTO dto) {
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid LoginRequestDTO dto) {
         return ResponseEntity.ok(service.login(dto));
     }
 }
