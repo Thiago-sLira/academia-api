@@ -49,8 +49,8 @@ public class GlobalExceptionHandler {
                 .body(new ErroRespostaDTO(HttpStatus.UNAUTHORIZED.value(), ex.getMessage()));
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErroRespostaDTO> handleRuntimeException(RuntimeException ex) {
+    @ExceptionHandler(AlunoNaoEncontradoException.class)
+    public ResponseEntity<ErroRespostaDTO> handleAlunoNaoEncontrado(AlunoNaoEncontradoException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErroRespostaDTO(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
     }

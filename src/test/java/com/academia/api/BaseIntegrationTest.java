@@ -1,7 +1,5 @@
 package com.academia.api;
 
-import com.academia.api.repositories.AlunoRepository;
-import com.academia.api.repositories.FuncionarioRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.database.rider.core.api.configuration.DBUnit;
 import com.github.database.rider.spring.api.DBRider;
@@ -23,16 +21,4 @@ public abstract class BaseIntegrationTest {
 
     @Autowired
     protected ObjectMapper objectMapper;
-
-    @Autowired
-    protected AlunoRepository alunoRepository;
-
-    @Autowired
-    protected FuncionarioRepository funcionarioRepository;
-
-    @org.junit.jupiter.api.BeforeEach
-    void cleanState() {
-        alunoRepository.deleteAll();
-        funcionarioRepository.deleteAll();
-    }
 }

@@ -1,0 +1,25 @@
+tb_aluno:
+  - id_aluno: 1
+    nome: "João da Silva"
+    email: "joao.silva@email.com"
+    telefone: "11987654321"
+    idade: 25
+    peso: 78.50
+    altura: 1.80
+    genero: "MASCULINO"
+    nivel_experiencia: "INTERMEDIARIO"
+    dias_disponiveis_semana: 4
+    restricao_medica: "Nenhuma restrição"
+    ativo: true
+  - id_aluno: 2
+    nome: "Maria Souza"
+    email: "maria.souza@email.com"
+    telefone: "11999998888"
+    idade: null
+    peso: null
+    altura: null
+    genero: null
+    nivel_experiencia: null
+    dias_disponiveis_semana: null
+    restricao_medica: null
+    ativo: true

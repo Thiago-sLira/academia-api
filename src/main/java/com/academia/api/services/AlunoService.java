@@ -2,6 +2,7 @@ package com.academia.api.services;
 
 import com.academia.api.dtos.requests.AlunoRequestDTO;
 import com.academia.api.dtos.responses.AlunoResponseDTO;
+import com.academia.api.exceptions.AlunoNaoEncontradoException;
 import com.academia.api.models.entities.Aluno;
 import com.academia.api.repositories.AlunoRepository;
 import org.springframework.stereotype.Service;
@@ -43,14 +44,14 @@ public class AlunoService {
 
     public AlunoResponseDTO buscarPorId(Long id) {
         Aluno aluno = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Aluno não encontrado com id: " + id));
+                .orElseThrow(() -> new AlunoNaoEncontradoException(id));
         return new AlunoResponseDTO(aluno);
     }
 
     @Transactional
     public AlunoResponseDTO atualizar(Long id, AlunoRequestDTO dto) {
         Aluno aluno = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Aluno não encontrado com id: " + id));
+                .orElseThrow(() -> new AlunoNaoEncontradoException(id));
 
         aluno.setNome(dto.nome());
         aluno.setEmail(dto.email());
@@ -69,7 +70,7 @@ public class AlunoService {
     @Transactional
     public void deletar(Long id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException("Aluno não encontrado com id: " + id);
+            throw new AlunoNaoEncontradoException(id);
         }
         repository.deleteById(id);
     }
