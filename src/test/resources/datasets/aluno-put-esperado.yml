@@ -1,0 +1,25 @@
+tb_aluno:
+  - id_aluno: 1
+    nome: "João Atualizado"
+    email: "joao.atualizado@email.com"
+    telefone: "11911112222"
+    idade: 30
+    peso: 85.00
+    altura: 1.82
+    genero: "MASCULINO"
+    nivel_experiencia: "AVANCADO"
+    dias_disponiveis_semana: 5
+    restricao_medica: "Lombar"
+    ativo: true
+  - id_aluno: 2
+    nome: "Maria Souza"
+    email: "maria.souza@email.com"
+    telefone: "11999998888"
+    idade: null
+    peso: null
+    altura: null
+    genero: null
+    nivel_experiencia: null
+    dias_disponiveis_semana: null
+    restricao_medica: null
+    ativo: true

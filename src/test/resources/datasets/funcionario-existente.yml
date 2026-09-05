@@ -1,0 +1,15 @@
+tb_funcionario:
+  - id_funcionario: 1
+    nome: "Admin Teste"
+    email: "admin@academia.com"
+    senha: "$2a$04$jIdgqOJCxwcVbmFe.DV2QOxunN.ORY.Ps.e6AiscswdV4sUQF6H3."
+    registro_academico: "ADM-001"
+    perfil: "ADMIN"
+    ativo: true
+  - id_funcionario: 2
+    nome: "Professor Silva"
+    email: "professor.silva@academia.com"
+    senha: "$2a$04$jIdgqOJCxwcVbmFe.DV2QOxunN.ORY.Ps.e6AiscswdV4sUQF6H3."
+    registro_academico: null
+    perfil: "PROFESSOR"
+    ativo: true
