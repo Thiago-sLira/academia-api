@@ -15,6 +15,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.containsStringIgnoringCase;
 
 class CadastrarAlunoIntegrationTest extends BaseIntegrationTest {
 
@@ -195,5 +196,51 @@ class CadastrarAlunoIntegrationTest extends BaseIntegrationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detalhes[*].campo", hasItem("peso")))
                 .andExpect(jsonPath("$.detalhes[*].mensagem", hasItem(containsString("O campo 'peso' deve ser informado com até 3 dígitos inteiros e 2 casas decimais"))));
+    }
+
+    @Test
+    @DisplayName("Deve retornar 415 com ErroRespostaDTO quando Content-Type não for application/json")
+    @DataSet(value = "datasets/alunos-vazio.yml")
+    @ExpectedDataSet(value = "datasets/alunos-vazio.yml")
+    void deveRetornar415QuandoContentTypeInvalido() throws Exception {
+        mockMvc.perform(post(URL_ALUNOS)
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content("qualquer coisa"))
+                .andExpect(status().isUnsupportedMediaType())
+                .andExpect(jsonPath("$.status").value(415))
+                .andExpect(jsonPath("$.erro", containsStringIgnoringCase("application/json")));
+    }
+
+    @Test
+    @DisplayName("Deve retornar 400 com ErroRespostaDTO quando o corpo da requisição for JSON malformado")
+    @DataSet(value = "datasets/alunos-vazio.yml")
+    @ExpectedDataSet(value = "datasets/alunos-vazio.yml")
+    void deveRetornar400QuandoCorpoJsonMalformado() throws Exception {
+        mockMvc.perform(post(URL_ALUNOS)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{ invalido }"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.erro", containsStringIgnoringCase("JSON inválido")));
+    }
+
+    @Test
+    @DisplayName("Deve retornar 409 com ErroRespostaDTO quando o e-mail já estiver cadastrado")
+    @DataSet(value = "datasets/aluno-existente.yml")
+    @ExpectedDataSet(value = "datasets/aluno-existente.yml", ignoreCols = {"criado_em", "atualizado_em"})
+    void deveRetornar409QuandoEmailDuplicado() throws Exception {
+        AlunoRequestDTO requestDTO = new AlunoRequestDTO(
+                "Outro Nome",
+                "joao.silva@email.com",  // e-mail já existente no dataset
+                "11900001111",
+                null, null, null, null, null, null, null
+        );
+
+        mockMvc.perform(post(URL_ALUNOS)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDTO)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.erro").value("O e-mail informado já está em uso. Utilize um e-mail diferente."));
     }
 }

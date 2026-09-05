@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 
 import java.math.BigDecimal;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -115,5 +116,45 @@ class AtualizarAlunoIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.detalhes[*].campo", hasItem("genero")))
                 .andExpect(jsonPath("$.detalhes[*].mensagem", hasItem("Valor inválido para o campo 'genero'")));
+    }
+
+    @Test
+    @DisplayName("Deve retornar 400 com ErroRespostaDTO quando o ID informado na URL não for um número")
+    @DataSet(value = "datasets/alunos-vazio.yml")
+    void deveRetornar400QuandoIdNaoForNumerico() throws Exception {
+        AlunoRequestDTO requestDTO = new AlunoRequestDTO(
+                "Qualquer Nome", "qualquer@email.com", "11900000000",
+                null, null, null, null, null, null, null
+        );
+
+        mockMvc.perform(put("/api/alunos/abc")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.erro", containsString("'id'")))
+                .andExpect(jsonPath("$.erro", containsString("'abc'")))
+                .andExpect(jsonPath("$.erro", containsString("número inteiro")));
+    }
+
+    @Test
+    @DisplayName("Deve retornar 409 com ErroRespostaDTO quando o e-mail já pertencer a outro aluno")
+    @DataSet(value = "datasets/aluno-existente.yml")
+    @ExpectedDataSet(value = "datasets/aluno-existente.yml", ignoreCols = {"criado_em", "atualizado_em"})
+    void deveRetornar409QuandoEmailJaEmUsoNaAtualizacao() throws Exception {
+        // Tenta atualizar aluno 2 com o e-mail do aluno 1
+        AlunoRequestDTO requestDTO = new AlunoRequestDTO(
+                "Maria Souza",
+                "joao.silva@email.com",  // e-mail já pertence ao aluno 1
+                "11999998888",
+                null, null, null, null, null, null, null
+        );
+
+        mockMvc.perform(put("/api/alunos/2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDTO)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.erro").value("O e-mail informado já está em uso. Utilize um e-mail diferente."));
     }
 }
