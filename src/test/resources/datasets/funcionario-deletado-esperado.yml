@@ -6,3 +6,7 @@ tb_funcionario:
     registro_academico: null
     perfil: "PROFESSOR"
     ativo: true
+
+tb_tipo_treino: []
+
+tb_plano_treino: []

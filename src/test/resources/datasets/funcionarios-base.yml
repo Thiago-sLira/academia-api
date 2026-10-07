@@ -6,3 +6,7 @@ tb_funcionario:
     registro_academico: "ADM-001"
     perfil: "ADMIN"
     ativo: true
+
+tb_tipo_treino: []
+
+tb_plano_treino: []
