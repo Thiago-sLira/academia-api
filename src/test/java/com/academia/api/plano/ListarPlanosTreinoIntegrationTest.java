@@ -90,4 +90,13 @@ class ListarPlanosTreinoIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.content").isEmpty())
                 .andExpect(jsonPath("$.totalElements").value(0));
     }
+
+    @Test
+    @DisplayName("Deve ignorar filtro nivelRecomendado inválido e retornar todos os planos sem aplicar predicate")
+    @DataSet(value = "datasets/planos-treino-paginacao.yml")
+    void deveIgnorarFiltroNivelRecomendadoInvalido() throws Exception {
+        mockMvc.perform(get(URL).param("nivelRecomendado", "NIVEL_DESCONHECIDO"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalElements").value(12));
+    }
 }

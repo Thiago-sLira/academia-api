@@ -23,6 +23,12 @@ public class PlanoTreinoController {
 
     private final PlanoTreinoService service;
 
+    @GetMapping("/{id}")
+    @Operation(summary = "Buscar plano de treino por ID")
+    public ResponseEntity<PlanoTreinoResponseDTO> buscar(@PathVariable Long id) {
+        return ResponseEntity.ok(service.buscarPorId(id));
+    }
+
     @GetMapping
     @Operation(summary = "Listar planos de treino com paginação e filtros opcionais")
     public ResponseEntity<Page<PlanoTreinoListagemResponseDTO>> listar(

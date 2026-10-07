@@ -4,6 +4,7 @@ import com.academia.api.dtos.requests.PlanoTreinoRequestDTO;
 import com.academia.api.dtos.responses.PlanoTreinoListagemResponseDTO;
 import com.academia.api.dtos.responses.PlanoTreinoResponseDTO;
 import com.academia.api.exceptions.PerfilNaoAutorizadoException;
+import com.academia.api.exceptions.PlanoTreinoNaoEncontradoException;
 import com.academia.api.exceptions.ProfessorNaoEncontradoException;
 import com.academia.api.exceptions.TipoTreinoNaoEncontradoException;
 import com.academia.api.models.entities.Funcionario;
@@ -38,6 +39,12 @@ public class PlanoTreinoService {
         this.planoTreinoRepository = planoTreinoRepository;
         this.funcionarioRepository = funcionarioRepository;
         this.tipoTreinoRepository = tipoTreinoRepository;
+    }
+
+    public PlanoTreinoResponseDTO buscarPorId(Long id) {
+        PlanoTreino plano = planoTreinoRepository.findById(id)
+                .orElseThrow(() -> new PlanoTreinoNaoEncontradoException(id));
+        return new PlanoTreinoResponseDTO(plano);
     }
 
     @Transactional

@@ -50,8 +50,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<ErroRespostaDTO> handleMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex) {
         String enviado = ex.getContentType() != null ? ex.getContentType().toString() : "não informado";
-        String mensagem = String.format(
-                "Content-Type '%s' não é suportado. Utilize 'application/json'.", enviado);
+        String mensagem = String.format("Content-Type '%s' não é suportado. Utilize 'application/json'.", enviado);
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
                 .body(new ErroRespostaDTO(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(), mensagem));
     }
