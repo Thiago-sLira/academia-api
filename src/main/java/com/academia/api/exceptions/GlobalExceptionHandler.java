@@ -97,4 +97,28 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErroRespostaDTO(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
     }
+
+    @ExceptionHandler(TipoTreinoNaoEncontradoException.class)
+    public ResponseEntity<ErroRespostaDTO> handleTipoTreinoNaoEncontrado(TipoTreinoNaoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErroRespostaDTO(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(PlanoTreinoNaoEncontradoException.class)
+    public ResponseEntity<ErroRespostaDTO> handlePlanoTreinoNaoEncontrado(PlanoTreinoNaoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErroRespostaDTO(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(ProfessorNaoEncontradoException.class)
+    public ResponseEntity<ErroRespostaDTO> handleProfessorNaoEncontrado(ProfessorNaoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErroRespostaDTO(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(PerfilNaoAutorizadoException.class)
+    public ResponseEntity<ErroRespostaDTO> handlePerfilNaoAutorizado(PerfilNaoAutorizadoException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErroRespostaDTO(HttpStatus.FORBIDDEN.value(), ex.getMessage()));
+    }
 }

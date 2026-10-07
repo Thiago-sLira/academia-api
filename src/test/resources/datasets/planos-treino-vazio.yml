@@ -1,0 +1,15 @@
+tb_tipo_treino:
+  - id_tipo_treino: 1
+    nome: "Musculação"
+    descricao: "Treino com pesos e equipamentos de resistência"
+
+tb_funcionario:
+  - id_funcionario: 10
+    nome: "Professor Teste"
+    email: "professor@academia.com"
+    senha: "$2a$04$jIdgqOJCxwcVbmFe.DV2QOxunN.ORY.Ps.e6AiscswdV4sUQF6H3."
+    registro_academico: "PROF-010"
+    perfil: "PROFESSOR"
+    ativo: true
+
+tb_plano_treino: []
