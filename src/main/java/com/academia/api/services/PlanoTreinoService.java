@@ -2,9 +2,9 @@ package com.academia.api.services;
 
 import com.academia.api.dtos.requests.PlanoTreinoRequestDTO;
 import com.academia.api.dtos.responses.PlanoTreinoListagemResponseDTO;
+import com.academia.api.dtos.responses.PlanoTreinoPaginadoResponseDTO;
 import com.academia.api.dtos.responses.PlanoTreinoResponseDTO;
 import com.academia.api.exceptions.PerfilNaoAutorizadoException;
-import com.academia.api.exceptions.PlanoTreinoNaoEncontradoException;
 import com.academia.api.exceptions.ProfessorNaoEncontradoException;
 import com.academia.api.exceptions.TipoTreinoNaoEncontradoException;
 import com.academia.api.models.entities.Funcionario;
@@ -17,7 +17,6 @@ import com.academia.api.repositories.PlanoTreinoRepository;
 import com.academia.api.repositories.TipoTreinoRepository;
 import com.academia.api.validation.EnumNormalizer;
 import jakarta.persistence.criteria.Predicate;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -39,12 +38,6 @@ public class PlanoTreinoService {
         this.planoTreinoRepository = planoTreinoRepository;
         this.funcionarioRepository = funcionarioRepository;
         this.tipoTreinoRepository = tipoTreinoRepository;
-    }
-
-    public PlanoTreinoResponseDTO buscarPorId(Long id) {
-        PlanoTreino plano = planoTreinoRepository.findById(id)
-                .orElseThrow(() -> new PlanoTreinoNaoEncontradoException(id));
-        return new PlanoTreinoResponseDTO(plano);
     }
 
     @Transactional
@@ -73,7 +66,7 @@ public class PlanoTreinoService {
         return new PlanoTreinoResponseDTO(planoTreinoRepository.save(plano));
     }
 
-    public Page<PlanoTreinoListagemResponseDTO> listar(Long idTipoTreino,
+    public PlanoTreinoPaginadoResponseDTO listar(Long idTipoTreino,
                                                        Long idProfessorCriador,
                                                        String nivelRecomendado,
                                                        Pageable pageable) {
@@ -97,6 +90,10 @@ public class PlanoTreinoService {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        return planoTreinoRepository.findAll(spec, pageable).map(PlanoTreinoListagemResponseDTO::new);
+        var pagina = planoTreinoRepository.findAll(spec, pageable);
+        return new PlanoTreinoPaginadoResponseDTO(
+                pagina.map(PlanoTreinoListagemResponseDTO::new).getContent(),
+                pagina.getTotalElements()
+        );
     }
 }

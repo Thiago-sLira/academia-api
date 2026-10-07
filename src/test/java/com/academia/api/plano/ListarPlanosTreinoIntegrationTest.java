@@ -15,16 +15,13 @@ class ListarPlanosTreinoIntegrationTest extends BaseIntegrationTest {
     private static final String URL = "/api/planos-treino";
 
     @Test
-    @DisplayName("Deve retornar 200 com lista paginada quando existirem planos cadastrados")
+    @DisplayName("Deve retornar 200 com lista paginada e totalRegistros quando existirem planos cadastrados")
     @DataSet(value = "datasets/planos-treino-paginacao.yml")
     void deveRetornarListaPaginadaQuandoExistiremPlanos() throws Exception {
         mockMvc.perform(get(URL))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.totalElements").value(12))
-                .andExpect(jsonPath("$.totalPages").value(2))
-                .andExpect(jsonPath("$.size").value(10))
-                .andExpect(jsonPath("$.number").value(0));
+                .andExpect(jsonPath("$.planos").isArray())
+                .andExpect(jsonPath("$.totalRegistros").value(12));
     }
 
     @Test
@@ -33,20 +30,18 @@ class ListarPlanosTreinoIntegrationTest extends BaseIntegrationTest {
     void deveAplicarPaginacaoPadraoQuandoNenhumParametroInformado() throws Exception {
         mockMvc.perform(get(URL))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.length()").value(10))
-                .andExpect(jsonPath("$.size").value(10))
-                .andExpect(jsonPath("$.number").value(0));
+                .andExpect(jsonPath("$.planos.length()").value(10))
+                .andExpect(jsonPath("$.totalRegistros").value(12));
     }
 
     @Test
     @DisplayName("Deve retornar a segunda página corretamente com os registros restantes")
     @DataSet(value = "datasets/planos-treino-paginacao.yml")
     void deveRetornarSegundaPaginaComRegistrosRestantes() throws Exception {
-        mockMvc.perform(get(URL).param("page", "1").param("size", "10"))
+        mockMvc.perform(get(URL).param("paginaAtual", "1").param("tamanhoPagina", "10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.length()").value(2))
-                .andExpect(jsonPath("$.number").value(1))
-                .andExpect(jsonPath("$.totalElements").value(12));
+                .andExpect(jsonPath("$.planos.length()").value(2))
+                .andExpect(jsonPath("$.totalRegistros").value(12));
     }
 
     @Test
@@ -55,9 +50,9 @@ class ListarPlanosTreinoIntegrationTest extends BaseIntegrationTest {
     void deveFiltrarPorIdTipoTreino() throws Exception {
         mockMvc.perform(get(URL).param("idTipoTreino", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements").value(6))
-                .andExpect(jsonPath("$.content[0].idTipoTreino").value(1))
-                .andExpect(jsonPath("$.content[0].nomeTipoTreino").value("Musculação"));
+                .andExpect(jsonPath("$.totalRegistros").value(6))
+                .andExpect(jsonPath("$.planos[0].idTipoTreino").value(1))
+                .andExpect(jsonPath("$.planos[0].nomeTipoTreino").value("Musculação"));
     }
 
     @Test
@@ -66,9 +61,9 @@ class ListarPlanosTreinoIntegrationTest extends BaseIntegrationTest {
     void deveFiltrarPorIdProfessorCriador() throws Exception {
         mockMvc.perform(get(URL).param("idProfessorCriador", "10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements").value(12))
-                .andExpect(jsonPath("$.content[0].idProfessorCriador").value(10))
-                .andExpect(jsonPath("$.content[0].nomeProfessor").value("Professor Teste"));
+                .andExpect(jsonPath("$.totalRegistros").value(12))
+                .andExpect(jsonPath("$.planos[0].idProfessorCriador").value(10))
+                .andExpect(jsonPath("$.planos[0].nomeProfessor").value("Professor Teste"));
     }
 
     @Test
@@ -77,18 +72,18 @@ class ListarPlanosTreinoIntegrationTest extends BaseIntegrationTest {
     void deveFiltrarPorNivelRecomendado() throws Exception {
         mockMvc.perform(get(URL).param("nivelRecomendado", "AVANCADO"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements").value(3))
-                .andExpect(jsonPath("$.content[0].nivelRecomendado").value("AVANCADO"));
+                .andExpect(jsonPath("$.totalRegistros").value(3))
+                .andExpect(jsonPath("$.planos[0].nivelRecomendado").value("AVANCADO"));
     }
 
     @Test
-    @DisplayName("Deve retornar 200 com content vazio e totalElements 0 quando não houver planos")
+    @DisplayName("Deve retornar 200 com planos vazio e totalRegistros 0 quando não houver planos")
     @DataSet(value = "datasets/planos-treino-vazio.yml")
     void deveRetornarListaVaziaQuandoNaoHouverPlanos() throws Exception {
         mockMvc.perform(get(URL))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isEmpty())
-                .andExpect(jsonPath("$.totalElements").value(0));
+                .andExpect(jsonPath("$.planos").isEmpty())
+                .andExpect(jsonPath("$.totalRegistros").value(0));
     }
 
     @Test
@@ -97,6 +92,6 @@ class ListarPlanosTreinoIntegrationTest extends BaseIntegrationTest {
     void deveIgnorarFiltroNivelRecomendadoInvalido() throws Exception {
         mockMvc.perform(get(URL).param("nivelRecomendado", "NIVEL_DESCONHECIDO"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements").value(12));
+                .andExpect(jsonPath("$.totalRegistros").value(12));
     }
 }
