@@ -40,6 +40,26 @@ Cada versão segue o formato **[MAJOR.MINOR.PATCH]** conforme o [Versionamento S
 
 ---
 
+## [1.1.0] - 2026-10-06
+
+### Added
+- **Módulo Tipo de Treino** — entidade `TipoTreino`, repositório e endpoint `GET /api/tipos-treino` para listagem de todos os tipos de treino cadastrados.
+- **Módulo Plano de Treino** — entidade `PlanoTreino` com relacionamentos para `TipoTreino` e `Funcionario`; endpoint `POST /api/planos-treino` para criação de planos com validação completa de campos.
+- **GET paginado de Planos de Treino** — endpoint `GET /api/planos-treino` com paginação padrão (página 0, tamanho 10) e filtros opcionais por `idTipoTreino`, `idProfessorCriador` e `nivelRecomendado` via `JpaSpecificationExecutor`.
+- **Validação de perfil no POST de Plano de Treino** — apenas funcionários com perfil `PROFESSOR` podem criar planos; perfis `ADMIN` e `ALUNO` retornam `403 Forbidden`.
+- **Novos tratamentos de erro** — handlers para `TipoTreinoNaoEncontradoException`, `PlanoTreinoNaoEncontradoException`, `ProfessorNaoEncontradoException` (`404`) e `PerfilNaoAutorizadoException` (`403`) no `GlobalExceptionHandler`.
+- **Testes de integração — Plano de Treino** — 15 cenários para `POST /api/planos-treino` e 7 cenários para `GET /api/planos-treino` cobrindo paginação, filtros e todos os erros de negócio.
+- **Testes de integração — Tipo de Treino** — 2 cenários para `GET /api/tipos-treino`.
+
+### Changed
+- **Validações do Plano de Treino** — campo `titulo` reduzido para máximo de 100 caracteres; campo `descricao` tornado obrigatório com máximo de 250 caracteres.
+- **Datasets de teste de Funcionário** — todos os 6 arquivos YAML passaram a incluir `tb_tipo_treino: []` e `tb_plano_treino: []` para garantir limpeza correta das tabelas filhas independente da ordem de execução dos testes.
+
+### Fixed
+- **FK violation nos testes do IntelliJ** — datasets de funcionário não declaravam `tb_plano_treino`, causando `JdbcSQLIntegrityConstraintViolationException` ao tentar deletar `tb_funcionario` quando testes de plano rodavam primeiro. Corrigido adicionando as tabelas dependentes no final de cada dataset.
+
+---
+
 ## [1.0.0] - 2026-09-05
 
 ### Added

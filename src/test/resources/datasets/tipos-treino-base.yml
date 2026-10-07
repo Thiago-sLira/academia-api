@@ -1,0 +1,11 @@
+tb_tipo_treino:
+  - id_tipo_treino: 1
+    nome: "Musculação"
+    descricao: "Treino com pesos e equipamentos de resistência"
+  - id_tipo_treino: 2
+    nome: "Cardio"
+    descricao: "Treino aeróbico para condicionamento cardiovascular"
+
+tb_funcionario: []
+
+tb_plano_treino: []

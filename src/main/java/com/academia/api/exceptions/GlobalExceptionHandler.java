@@ -50,8 +50,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<ErroRespostaDTO> handleMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex) {
         String enviado = ex.getContentType() != null ? ex.getContentType().toString() : "não informado";
-        String mensagem = String.format(
-                "Content-Type '%s' não é suportado. Utilize 'application/json'.", enviado);
+        String mensagem = String.format("Content-Type '%s' não é suportado. Utilize 'application/json'.", enviado);
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
                 .body(new ErroRespostaDTO(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(), mensagem));
     }
@@ -96,5 +95,29 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErroRespostaDTO> handleFuncionarioNaoEncontrado(FuncionarioNaoEncontradoException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErroRespostaDTO(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(TipoTreinoNaoEncontradoException.class)
+    public ResponseEntity<ErroRespostaDTO> handleTipoTreinoNaoEncontrado(TipoTreinoNaoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErroRespostaDTO(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(PlanoTreinoNaoEncontradoException.class)
+    public ResponseEntity<ErroRespostaDTO> handlePlanoTreinoNaoEncontrado(PlanoTreinoNaoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErroRespostaDTO(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(ProfessorNaoEncontradoException.class)
+    public ResponseEntity<ErroRespostaDTO> handleProfessorNaoEncontrado(ProfessorNaoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErroRespostaDTO(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(PerfilNaoAutorizadoException.class)
+    public ResponseEntity<ErroRespostaDTO> handlePerfilNaoAutorizado(PerfilNaoAutorizadoException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErroRespostaDTO(HttpStatus.FORBIDDEN.value(), ex.getMessage()));
     }
 }
