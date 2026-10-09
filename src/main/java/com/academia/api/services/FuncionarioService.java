@@ -14,6 +14,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.academia.api.specifications.FuncionarioSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 import java.util.List;
 
 @Service
@@ -43,9 +49,44 @@ public class FuncionarioService {
         return new FuncionarioResponseDTO(repository.save(funcionario));
     }
 
-    public List<FuncionarioResponseDTO> listarTodos() {
-        return repository.findAll().stream().map(FuncionarioResponseDTO::new).toList();
+
+    public Page<FuncionarioResponseDTO> listarTodos(
+            Long id,
+            String nome,
+            String email,
+            String registroAcademico,
+            PerfilFuncionario perfil,
+            Boolean ativo,
+            int pagina,
+            int tamanhoPagina
+    ) {
+        if (pagina < 0) {
+            throw new IllegalArgumentException("A página não pode ser negativa.");
+        }
+
+        if (tamanhoPagina < 1) {
+            throw new IllegalArgumentException("O tamanho da página deve ser maior que zero.");
+        }
+
+        Pageable pageable = PageRequest.of(
+                pagina,
+                tamanhoPagina,
+                Sort.by("id").ascending()
+        );
+
+        return repository.findAll(
+                FuncionarioSpecification.filtrar(
+                        id,
+                        nome,
+                        email,
+                        registroAcademico,
+                        perfil,
+                        ativo
+                ),
+                pageable
+        ).map(FuncionarioResponseDTO::new);
     }
+
 
     public List<FuncionarioResponseDTO> listarAtivos() {
         return repository.findByAtivoTrue().stream().map(FuncionarioResponseDTO::new).toList();

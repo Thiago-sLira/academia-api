@@ -13,6 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.academia.api.models.enums.PerfilFuncionario;
+import org.springframework.data.domain.Page;
+
 import java.util.List;
 
 @RestController
@@ -23,22 +26,36 @@ public class FuncionarioController {
 
     private final FuncionarioService service;
 
+
     @GetMapping
-    @Operation(summary = "Listar todos os funcionários")
-    public ResponseEntity<List<FuncionarioResponseDTO>> listar() {
-        return ResponseEntity.ok(service.listarTodos());
+    @Operation(summary = "Listar funcionários com filtros e paginação")
+    public ResponseEntity<Page<FuncionarioResponseDTO>> listar(
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String registroAcademico,
+            @RequestParam(required = false) PerfilFuncionario perfil,
+            @RequestParam(required = false) Boolean ativo,
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "10") int tamanhoPagina
+    ) {
+        return ResponseEntity.ok(service.listarTodos(
+                id,
+                nome,
+                email,
+                registroAcademico,
+                perfil,
+                ativo,
+                pagina,
+                tamanhoPagina
+        ));
     }
+
 
     @GetMapping("/ativos")
     @Operation(summary = "Listar apenas funcionários ativos")
     public ResponseEntity<List<FuncionarioResponseDTO>> listarAtivos() {
         return ResponseEntity.ok(service.listarAtivos());
-    }
-
-    @GetMapping("/{id}")
-    @Operation(summary = "Buscar funcionário por ID")
-    public ResponseEntity<FuncionarioResponseDTO> buscar(@PathVariable Long id) {
-        return ResponseEntity.ok(service.buscarPorId(id));
     }
 
     @PostMapping

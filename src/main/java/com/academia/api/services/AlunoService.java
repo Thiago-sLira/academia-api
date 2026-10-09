@@ -4,11 +4,18 @@ import com.academia.api.dtos.requests.AlunoRequestDTO;
 import com.academia.api.dtos.responses.AlunoResponseDTO;
 import com.academia.api.exceptions.AlunoNaoEncontradoException;
 import com.academia.api.models.entities.Aluno;
+import com.academia.api.models.enums.Genero;
+import com.academia.api.models.enums.NivelExperiencia;
 import com.academia.api.repositories.AlunoRepository;
+import com.academia.api.specifications.AlunoSpecification;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 @Service
 public class AlunoService {
@@ -38,9 +45,52 @@ public class AlunoService {
         return new AlunoResponseDTO(repository.save(aluno));
     }
 
-    public List<AlunoResponseDTO> listarTodos() {
-        return repository.findAll().stream().map(AlunoResponseDTO::new).toList();
+
+
+
+    public Page<AlunoResponseDTO> listarTodos(
+            Long id,
+            String nome,
+            String email,
+            String telefone,
+            Integer idade,
+            BigDecimal peso,
+            BigDecimal altura,
+            Genero genero,
+            NivelExperiencia nivelExperiencia,
+            int pagina,
+            int tamanhoPagina
+        ) {
+        if (pagina < 0) {
+            throw new IllegalArgumentException("A página não pode ser negativa.");
+        }
+
+        if (tamanhoPagina < 1) {
+            throw new IllegalArgumentException("O tamanho da página deve ser maior que zero.");
+        }
+
+        Pageable pageable = PageRequest.of(
+            pagina,
+            tamanhoPagina,
+            org.springframework.data.domain.Sort.by("id").ascending()
+        );
+
+        return repository.findAll(
+                AlunoSpecification.filtrar(
+                        id,
+                        nome,
+                        email,
+                        telefone,
+                        idade,
+                        peso,
+                        altura,
+                        genero,
+                        nivelExperiencia
+                ),
+                pageable
+        ).map(AlunoResponseDTO::new);
     }
+
 
     public AlunoResponseDTO buscarPorId(Long id) {
         Aluno aluno = repository.findById(id)
