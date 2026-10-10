@@ -1,7 +1,9 @@
 package com.academia.api.services;
 
+import com.academia.api.dtos.requests.FuncionarioFiltroDTO;
 import com.academia.api.dtos.requests.FuncionarioRequestDTO;
 import com.academia.api.dtos.requests.LoginRequestDTO;
+import com.academia.api.dtos.responses.FuncionarioPaginadoResponseDTO;
 import com.academia.api.dtos.responses.FuncionarioResponseDTO;
 import com.academia.api.dtos.responses.LoginResponseDTO;
 import com.academia.api.exceptions.CredenciaisInvalidasException;
@@ -9,16 +11,12 @@ import com.academia.api.exceptions.FuncionarioNaoEncontradoException;
 import com.academia.api.models.entities.Funcionario;
 import com.academia.api.models.enums.PerfilFuncionario;
 import com.academia.api.repositories.FuncionarioRepository;
+import com.academia.api.specifications.FuncionarioSpecification;
 import com.academia.api.validation.EnumNormalizer;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.academia.api.specifications.FuncionarioSpecification;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -50,52 +48,27 @@ public class FuncionarioService {
     }
 
 
-    public Page<FuncionarioResponseDTO> listarTodos(
-            Long id,
-            String nome,
-            String email,
-            String registroAcademico,
-            PerfilFuncionario perfil,
-            Boolean ativo,
-            int pagina,
-            int tamanhoPagina
-    ) {
-        if (pagina < 0) {
-            throw new IllegalArgumentException("A página não pode ser negativa.");
-        }
-
-        if (tamanhoPagina < 1) {
-            throw new IllegalArgumentException("O tamanho da página deve ser maior que zero.");
-        }
-
-        Pageable pageable = PageRequest.of(
-                pagina,
-                tamanhoPagina,
-                Sort.by("id").ascending()
+    public FuncionarioPaginadoResponseDTO listarTodos(FuncionarioFiltroDTO filtro) {
+        Page<Funcionario> page = repository.findAll(
+                FuncionarioSpecification.filtrar(
+                        filtro.id(),
+                        filtro.nome(),
+                        filtro.email(),
+                        filtro.registroAcademico(),
+                        filtro.perfil(),
+                        filtro.ativo()
+                ),
+                filtro.toPageable()
         );
 
-        return repository.findAll(
-                FuncionarioSpecification.filtrar(
-                        id,
-                        nome,
-                        email,
-                        registroAcademico,
-                        perfil,
-                        ativo
-                ),
-                pageable
-        ).map(FuncionarioResponseDTO::new);
+        return new FuncionarioPaginadoResponseDTO(
+                page.map(FuncionarioResponseDTO::new).getContent(),
+                page.getTotalElements()
+        );
     }
-
 
     public List<FuncionarioResponseDTO> listarAtivos() {
         return repository.findByAtivoTrue().stream().map(FuncionarioResponseDTO::new).toList();
-    }
-
-    public FuncionarioResponseDTO buscarPorId(Long id) {
-        Funcionario funcionario = repository.findById(id)
-                .orElseThrow(() -> new FuncionarioNaoEncontradoException(id));
-        return new FuncionarioResponseDTO(funcionario);
     }
 
     @Transactional
@@ -120,8 +93,7 @@ public class FuncionarioService {
     }
 
     public LoginResponseDTO login(LoginRequestDTO dto) {
-        Funcionario funcionario = repository.findByEmail(dto.email())
-                .orElseThrow(CredenciaisInvalidasException::new);
+        Funcionario funcionario = repository.findByEmail(dto.email()).orElseThrow(CredenciaisInvalidasException::new);
 
         if (!passwordEncoder.matches(dto.senha(), funcionario.getSenha())) {
             throw new CredenciaisInvalidasException();

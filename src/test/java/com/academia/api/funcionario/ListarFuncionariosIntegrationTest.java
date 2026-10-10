@@ -21,34 +21,28 @@ class ListarFuncionariosIntegrationTest extends BaseIntegrationTest {
     void deveRetornarListaComFuncionariosQuandoExistiremRegistros() throws Exception {
         mockMvc.perform(get(URL_FUNCIONARIOS))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.length()").value(2))
-                .andExpect(jsonPath("$.totalElements").value(2))
-                .andExpect(jsonPath("$.totalPages").value(1))
-                .andExpect(jsonPath("$.number").value(0))
-                .andExpect(jsonPath("$.size").value(10))
-                .andExpect(jsonPath("$.content[0].id").value(1))
-                .andExpect(jsonPath("$.content[0].nome").value("Admin Teste"))
-                .andExpect(jsonPath("$.content[0].email").value("admin@academia.com"))
-                .andExpect(jsonPath("$.content[0].perfil").value("ADMIN"))
-                .andExpect(jsonPath("$.content[0].ativo").value(true))
-                .andExpect(jsonPath("$.content[1].id").value(2))
-                .andExpect(jsonPath("$.content[1].nome").value("Professor Silva"))
-                .andExpect(jsonPath("$.content[1].email").value("professor.silva@academia.com"))
-                .andExpect(jsonPath("$.content[1].perfil").value("PROFESSOR"))
-                .andExpect(jsonPath("$.content[1].ativo").value(true));
+                .andExpect(jsonPath("$.funcionarios.length()").value(2))
+                .andExpect(jsonPath("$.totalRegistros").value(2))
+                .andExpect(jsonPath("$.funcionarios[0].id").value(1))
+                .andExpect(jsonPath("$.funcionarios[0].nome").value("Admin Teste"))
+                .andExpect(jsonPath("$.funcionarios[0].email").value("admin@academia.com"))
+                .andExpect(jsonPath("$.funcionarios[0].perfil").value("ADMIN"))
+                .andExpect(jsonPath("$.funcionarios[0].ativo").value(true))
+                .andExpect(jsonPath("$.funcionarios[1].id").value(2))
+                .andExpect(jsonPath("$.funcionarios[1].nome").value("Professor Silva"))
+                .andExpect(jsonPath("$.funcionarios[1].email").value("professor.silva@academia.com"))
+                .andExpect(jsonPath("$.funcionarios[1].perfil").value("PROFESSOR"))
+                .andExpect(jsonPath("$.funcionarios[1].ativo").value(true));
     }
 
     @Test
-    @DisplayName("Deve retornar página vazia quando não houver funcionários")
+    @DisplayName("Deve retornar lista vazia quando não houver funcionários")
     @DataSet(value = "datasets/funcionarios-vazio.yml")
     void deveRetornarListaVaziaQuandoNaoHouverFuncionarios() throws Exception {
         mockMvc.perform(get(URL_FUNCIONARIOS))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.length()").value(0))
-                .andExpect(jsonPath("$.totalElements").value(0))
-                .andExpect(jsonPath("$.totalPages").value(0))
-                .andExpect(jsonPath("$.number").value(0))
-                .andExpect(jsonPath("$.size").value(10));
+                .andExpect(jsonPath("$.funcionarios").isEmpty())
+                .andExpect(jsonPath("$.totalRegistros").value(0));
     }
 
     @Test
@@ -71,16 +65,15 @@ class ListarFuncionariosIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.length()").value(0));
     }
 
-
     @Test
     @DisplayName("Deve filtrar funcionários por ID")
     @DataSet(value = "datasets/funcionario-existente.yml")
     void deveFiltrarFuncionariosPorId() throws Exception {
         mockMvc.perform(get(URL_FUNCIONARIOS).param("id", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements").value(1))
-                .andExpect(jsonPath("$.content[0].id").value(1))
-                .andExpect(jsonPath("$.content[0].nome").value("Admin Teste"));
+                .andExpect(jsonPath("$.totalRegistros").value(1))
+                .andExpect(jsonPath("$.funcionarios[0].id").value(1))
+                .andExpect(jsonPath("$.funcionarios[0].nome").value("Admin Teste"));
     }
 
     @Test
@@ -89,8 +82,8 @@ class ListarFuncionariosIntegrationTest extends BaseIntegrationTest {
     void deveFiltrarFuncionariosPorNome() throws Exception {
         mockMvc.perform(get(URL_FUNCIONARIOS).param("nome", "silva"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements").value(1))
-                .andExpect(jsonPath("$.content[0].nome").value("Professor Silva"));
+                .andExpect(jsonPath("$.totalRegistros").value(1))
+                .andExpect(jsonPath("$.funcionarios[0].nome").value("Professor Silva"));
     }
 
     @Test
@@ -99,8 +92,8 @@ class ListarFuncionariosIntegrationTest extends BaseIntegrationTest {
     void deveFiltrarFuncionariosPorEmail() throws Exception {
         mockMvc.perform(get(URL_FUNCIONARIOS).param("email", "ADMIN@"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements").value(1))
-                .andExpect(jsonPath("$.content[0].email").value("admin@academia.com"));
+                .andExpect(jsonPath("$.totalRegistros").value(1))
+                .andExpect(jsonPath("$.funcionarios[0].email").value("admin@academia.com"));
     }
 
     @Test
@@ -109,8 +102,8 @@ class ListarFuncionariosIntegrationTest extends BaseIntegrationTest {
     void deveFiltrarFuncionariosPorRegistroAcademico() throws Exception {
         mockMvc.perform(get(URL_FUNCIONARIOS).param("registroAcademico", "ADM"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements").value(1))
-                .andExpect(jsonPath("$.content[0].id").value(1));
+                .andExpect(jsonPath("$.totalRegistros").value(1))
+                .andExpect(jsonPath("$.funcionarios[0].id").value(1));
     }
 
     @Test
@@ -119,8 +112,8 @@ class ListarFuncionariosIntegrationTest extends BaseIntegrationTest {
     void deveFiltrarFuncionariosPorPerfil() throws Exception {
         mockMvc.perform(get(URL_FUNCIONARIOS).param("perfil", "PROFESSOR"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements").value(1))
-                .andExpect(jsonPath("$.content[0].id").value(2));
+                .andExpect(jsonPath("$.totalRegistros").value(1))
+                .andExpect(jsonPath("$.funcionarios[0].id").value(2));
     }
 
     @Test
@@ -129,9 +122,9 @@ class ListarFuncionariosIntegrationTest extends BaseIntegrationTest {
     void deveFiltrarFuncionariosAtivos() throws Exception {
         mockMvc.perform(get(URL_FUNCIONARIOS).param("ativo", "true"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements").value(1))
-                .andExpect(jsonPath("$.content[0].id").value(1))
-                .andExpect(jsonPath("$.content[0].ativo").value(true));
+                .andExpect(jsonPath("$.totalRegistros").value(1))
+                .andExpect(jsonPath("$.funcionarios[0].id").value(1))
+                .andExpect(jsonPath("$.funcionarios[0].ativo").value(true));
     }
 
     @Test
@@ -140,10 +133,8 @@ class ListarFuncionariosIntegrationTest extends BaseIntegrationTest {
     void deveAplicarTamanhoPaginaPersonalizado() throws Exception {
         mockMvc.perform(get(URL_FUNCIONARIOS).param("tamanhoPagina", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.length()").value(1))
-                .andExpect(jsonPath("$.totalElements").value(2))
-                .andExpect(jsonPath("$.totalPages").value(2))
-                .andExpect(jsonPath("$.size").value(1));
+                .andExpect(jsonPath("$.funcionarios.length()").value(1))
+                .andExpect(jsonPath("$.totalRegistros").value(2));
     }
 
     @Test
@@ -151,14 +142,12 @@ class ListarFuncionariosIntegrationTest extends BaseIntegrationTest {
     @DataSet(value = "datasets/funcionario-existente.yml")
     void deveRetornarSegundaPagina() throws Exception {
         mockMvc.perform(get(URL_FUNCIONARIOS)
-                        .param("pagina", "1")
+                        .param("paginaAtual", "1")
                         .param("tamanhoPagina", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.number").value(1))
-                .andExpect(jsonPath("$.content.length()").value(1))
-                .andExpect(jsonPath("$.content[0].id").value(2));
+                .andExpect(jsonPath("$.funcionarios.length()").value(1))
+                .andExpect(jsonPath("$.funcionarios[0].id").value(2));
     }
-
 
     @Test
     @DisplayName("Deve filtrar funcionários inativos")
@@ -166,10 +155,9 @@ class ListarFuncionariosIntegrationTest extends BaseIntegrationTest {
     void deveFiltrarFuncionariosInativos() throws Exception {
         mockMvc.perform(get(URL_FUNCIONARIOS).param("ativo", "false"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements").value(1))
-                .andExpect(jsonPath("$.content[0].ativo").value(false));
+                .andExpect(jsonPath("$.totalRegistros").value(1))
+                .andExpect(jsonPath("$.funcionarios[0].ativo").value(false));
     }
-
 
     @Test
     @DisplayName("Deve combinar filtros de nome e perfil")
@@ -179,12 +167,10 @@ class ListarFuncionariosIntegrationTest extends BaseIntegrationTest {
                         .param("nome", "Professor")
                         .param("perfil", "PROFESSOR"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements").value(1))
-                .andExpect(jsonPath("$.content.length()").value(1))
-                .andExpect(jsonPath("$.content[0].id").value(2))
-                .andExpect(jsonPath("$.content[0].nome").value("Professor Silva"))
-                .andExpect(jsonPath("$.content[0].perfil").value("PROFESSOR"));
+                .andExpect(jsonPath("$.totalRegistros").value(1))
+                .andExpect(jsonPath("$.funcionarios.length()").value(1))
+                .andExpect(jsonPath("$.funcionarios[0].id").value(2))
+                .andExpect(jsonPath("$.funcionarios[0].nome").value("Professor Silva"))
+                .andExpect(jsonPath("$.funcionarios[0].perfil").value("PROFESSOR"));
     }
-
-
 }

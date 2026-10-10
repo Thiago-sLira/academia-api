@@ -1,7 +1,9 @@
 package com.academia.api.controllers;
 
+import com.academia.api.dtos.requests.FuncionarioFiltroDTO;
 import com.academia.api.dtos.requests.FuncionarioRequestDTO;
 import com.academia.api.dtos.requests.LoginRequestDTO;
+import com.academia.api.dtos.responses.FuncionarioPaginadoResponseDTO;
 import com.academia.api.dtos.responses.FuncionarioResponseDTO;
 import com.academia.api.dtos.responses.LoginResponseDTO;
 import com.academia.api.services.FuncionarioService;
@@ -9,12 +11,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.academia.api.models.enums.PerfilFuncionario;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -26,31 +26,11 @@ public class FuncionarioController {
 
     private final FuncionarioService service;
 
-
     @GetMapping
     @Operation(summary = "Listar funcionários com filtros e paginação")
-    public ResponseEntity<Page<FuncionarioResponseDTO>> listar(
-            @RequestParam(required = false) Long id,
-            @RequestParam(required = false) String nome,
-            @RequestParam(required = false) String email,
-            @RequestParam(required = false) String registroAcademico,
-            @RequestParam(required = false) PerfilFuncionario perfil,
-            @RequestParam(required = false) Boolean ativo,
-            @RequestParam(defaultValue = "0") int pagina,
-            @RequestParam(defaultValue = "10") int tamanhoPagina
-    ) {
-        return ResponseEntity.ok(service.listarTodos(
-                id,
-                nome,
-                email,
-                registroAcademico,
-                perfil,
-                ativo,
-                pagina,
-                tamanhoPagina
-        ));
+    public ResponseEntity<FuncionarioPaginadoResponseDTO> listar(@ParameterObject @ModelAttribute FuncionarioFiltroDTO filtro) {
+        return ResponseEntity.ok(service.listarTodos(filtro));
     }
-
 
     @GetMapping("/ativos")
     @Operation(summary = "Listar apenas funcionários ativos")

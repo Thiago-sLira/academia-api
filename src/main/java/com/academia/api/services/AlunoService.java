@@ -1,6 +1,8 @@
 package com.academia.api.services;
 
+import com.academia.api.dtos.requests.AlunoFiltroDTO;
 import com.academia.api.dtos.requests.AlunoRequestDTO;
+import com.academia.api.dtos.responses.AlunoPaginadoResponseDTO;
 import com.academia.api.dtos.responses.AlunoResponseDTO;
 import com.academia.api.exceptions.AlunoNaoEncontradoException;
 import com.academia.api.models.entities.Aluno;
@@ -9,13 +11,10 @@ import com.academia.api.models.enums.NivelExperiencia;
 import com.academia.api.repositories.AlunoRepository;
 import com.academia.api.specifications.AlunoSpecification;
 
+import com.academia.api.validation.EnumNormalizer;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
 
 @Service
 public class AlunoService {
@@ -35,8 +34,8 @@ public class AlunoService {
                 .idade(dto.idade())
                 .peso(dto.peso())
                 .altura(dto.altura())
-                .genero(com.academia.api.validation.EnumNormalizer.parseEnum(com.academia.api.models.enums.Genero.class, dto.genero()).orElse(null))
-                .nivelExperiencia(com.academia.api.validation.EnumNormalizer.parseEnum(com.academia.api.models.enums.NivelExperiencia.class, dto.nivelExperiencia()).orElse(null))
+                .genero(EnumNormalizer.parseEnum(Genero.class, dto.genero()).orElse(null))
+                .nivelExperiencia(EnumNormalizer.parseEnum(NivelExperiencia.class, dto.nivelExperiencia()).orElse(null))
                 .diasDisponiveisSemana(dto.diasDisponiveisSemana())
                 .restricaoMedica(dto.restricaoMedica())
                 .ativo(true)
@@ -45,63 +44,31 @@ public class AlunoService {
         return new AlunoResponseDTO(repository.save(aluno));
     }
 
-
-
-
-    public Page<AlunoResponseDTO> listarTodos(
-            Long id,
-            String nome,
-            String email,
-            String telefone,
-            Integer idade,
-            BigDecimal peso,
-            BigDecimal altura,
-            Genero genero,
-            NivelExperiencia nivelExperiencia,
-            int pagina,
-            int tamanhoPagina
-        ) {
-        if (pagina < 0) {
-            throw new IllegalArgumentException("A página não pode ser negativa.");
-        }
-
-        if (tamanhoPagina < 1) {
-            throw new IllegalArgumentException("O tamanho da página deve ser maior que zero.");
-        }
-
-        Pageable pageable = PageRequest.of(
-            pagina,
-            tamanhoPagina,
-            org.springframework.data.domain.Sort.by("id").ascending()
+    public AlunoPaginadoResponseDTO listarTodos(AlunoFiltroDTO filtro) {
+        Page<Aluno> page = repository.findAll(
+                AlunoSpecification.filtrar(
+                        filtro.id(),
+                        filtro.nome(),
+                        filtro.email(),
+                        filtro.telefone(),
+                        filtro.idade(),
+                        filtro.peso(),
+                        filtro.altura(),
+                        filtro.genero(),
+                        filtro.nivelExperiencia()
+                ),
+                filtro.toPageable()
         );
 
-        return repository.findAll(
-                AlunoSpecification.filtrar(
-                        id,
-                        nome,
-                        email,
-                        telefone,
-                        idade,
-                        peso,
-                        altura,
-                        genero,
-                        nivelExperiencia
-                ),
-                pageable
-        ).map(AlunoResponseDTO::new);
-    }
-
-
-    public AlunoResponseDTO buscarPorId(Long id) {
-        Aluno aluno = repository.findById(id)
-                .orElseThrow(() -> new AlunoNaoEncontradoException(id));
-        return new AlunoResponseDTO(aluno);
+        return new AlunoPaginadoResponseDTO(
+                page.map(AlunoResponseDTO::new).getContent(),
+                page.getTotalElements()
+        );
     }
 
     @Transactional
     public AlunoResponseDTO atualizar(Long id, AlunoRequestDTO dto) {
-        Aluno aluno = repository.findById(id)
-                .orElseThrow(() -> new AlunoNaoEncontradoException(id));
+        Aluno aluno = repository.findById(id).orElseThrow(() -> new AlunoNaoEncontradoException(id));
 
         aluno.setNome(dto.nome());
         aluno.setEmail(dto.email());
