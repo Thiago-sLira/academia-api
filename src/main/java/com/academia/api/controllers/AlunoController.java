@@ -1,17 +1,21 @@
+
 package com.academia.api.controllers;
 
+import com.academia.api.dtos.requests.AlunoFiltroDTO;
 import com.academia.api.dtos.requests.AlunoRequestDTO;
+import com.academia.api.dtos.responses.AlunoPaginadoResponseDTO;
 import com.academia.api.dtos.responses.AlunoResponseDTO;
 import com.academia.api.services.AlunoService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/alunos")
@@ -22,15 +26,9 @@ public class AlunoController {
     private final AlunoService service;
 
     @GetMapping
-    @Operation(summary = "Listar todos os alunos")
-    public ResponseEntity<List<AlunoResponseDTO>> listar() {
-        return ResponseEntity.ok(service.listarTodos());
-    }
-
-    @GetMapping("/{id}")
-    @Operation(summary = "Buscar aluno por ID")
-    public ResponseEntity<AlunoResponseDTO> buscar(@PathVariable Long id) {
-        return ResponseEntity.ok(service.buscarPorId(id));
+    @Operation(summary = "Listar alunos com filtros e paginação")
+    public ResponseEntity<AlunoPaginadoResponseDTO> listar(@ParameterObject @ModelAttribute AlunoFiltroDTO filtro) {
+        return ResponseEntity.ok(service.listarTodos(filtro));
     }
 
     @PostMapping
@@ -41,7 +39,10 @@ public class AlunoController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar dados de um aluno")
-    public ResponseEntity<AlunoResponseDTO> atualizar(@PathVariable Long id, @RequestBody @Valid AlunoRequestDTO dto) {
+    public ResponseEntity<AlunoResponseDTO> atualizar(
+            @PathVariable Long id,
+            @RequestBody @Valid AlunoRequestDTO dto
+    ) {
         return ResponseEntity.ok(service.atualizar(id, dto));
     }
 

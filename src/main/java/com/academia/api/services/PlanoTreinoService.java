@@ -1,5 +1,6 @@
 package com.academia.api.services;
 
+import com.academia.api.dtos.requests.PlanoTreinoFiltroDTO;
 import com.academia.api.dtos.requests.PlanoTreinoRequestDTO;
 import com.academia.api.dtos.responses.PlanoTreinoListagemResponseDTO;
 import com.academia.api.dtos.responses.PlanoTreinoPaginadoResponseDTO;
@@ -17,7 +18,6 @@ import com.academia.api.repositories.PlanoTreinoRepository;
 import com.academia.api.repositories.TipoTreinoRepository;
 import com.academia.api.validation.EnumNormalizer;
 import jakarta.persistence.criteria.Predicate;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,21 +66,18 @@ public class PlanoTreinoService {
         return new PlanoTreinoResponseDTO(planoTreinoRepository.save(plano));
     }
 
-    public PlanoTreinoPaginadoResponseDTO listar(Long idTipoTreino,
-                                                       Long idProfessorCriador,
-                                                       String nivelRecomendado,
-                                                       Pageable pageable) {
+    public PlanoTreinoPaginadoResponseDTO listar(PlanoTreinoFiltroDTO filtro) {
         Specification<PlanoTreino> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (idTipoTreino != null) {
-                predicates.add(cb.equal(root.get("tipoTreino").get("id"), idTipoTreino));
+            if (filtro.idTipoTreino() != null) {
+                predicates.add(cb.equal(root.get("tipoTreino").get("id"), filtro.idTipoTreino()));
             }
-            if (idProfessorCriador != null) {
-                predicates.add(cb.equal(root.get("professorCriador").get("id"), idProfessorCriador));
+            if (filtro.idProfessorCriador() != null) {
+                predicates.add(cb.equal(root.get("professorCriador").get("id"), filtro.idProfessorCriador()));
             }
-            if (nivelRecomendado != null && !nivelRecomendado.isBlank()) {
-                NivelExperiencia nivel = EnumNormalizer.parseEnum(NivelExperiencia.class, nivelRecomendado)
+            if (filtro.nivelRecomendado() != null && !filtro.nivelRecomendado().isBlank()) {
+                NivelExperiencia nivel = EnumNormalizer.parseEnum(NivelExperiencia.class, filtro.nivelRecomendado())
                         .orElse(null);
                 if (nivel != null) {
                     predicates.add(cb.equal(root.get("nivelRecomendado"), nivel));
@@ -90,7 +87,7 @@ public class PlanoTreinoService {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        var pagina = planoTreinoRepository.findAll(spec, pageable);
+        var pagina = planoTreinoRepository.findAll(spec, filtro.toPageable());
         return new PlanoTreinoPaginadoResponseDTO(
                 pagina.map(PlanoTreinoListagemResponseDTO::new).getContent(),
                 pagina.getTotalElements()

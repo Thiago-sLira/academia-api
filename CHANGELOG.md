@@ -40,6 +40,24 @@ Cada versão segue o formato **[MAJOR.MINOR.PATCH]** conforme o [Versionamento S
 
 ---
 
+## [1.2.0] - 2026-10-10
+
+### Added
+- **DTOs de resposta paginada** — criados `AlunoPaginadoResponseDTO` e `FuncionarioPaginadoResponseDTO` como records com campos `alunos`/`funcionarios` e `totalRegistros`, seguindo o mesmo padrão de `PlanoTreinoPaginadoResponseDTO`.
+- **DTOs de filtro** — criados `AlunoFiltroDTO`, `FuncionarioFiltroDTO` e `PlanoTreinoFiltroDTO` como records que agrupam os parâmetros de filtro e paginação de cada endpoint GET paginado, eliminando longas listas de `@RequestParam` nos métodos dos controllers e services.
+
+### Changed
+- **Resposta do `GET /api/alunos`** — substituída de `Page<AlunoResponseDTO>` (Spring interno) por `AlunoPaginadoResponseDTO`; array passa a se chamar `alunos` e o total de registros `totalRegistros`, removendo campos de metadados internos (`totalPages`, `number`, `size`). Lista vazia retorna `{ "alunos": [], "totalRegistros": 0 }`.
+- **Resposta do `GET /api/funcionarios`** — substituída de `Page<FuncionarioResponseDTO>` por `FuncionarioPaginadoResponseDTO`; array passa a se chamar `funcionarios` e o total de registros `totalRegistros`, com mesmo comportamento de lista vazia que o endpoint de alunos.
+- **Binding de parâmetros — `GET /api/alunos`** — controller e service migrados para receber `@ParameterObject @ModelAttribute AlunoFiltroDTO filtro` em vez de 11 `@RequestParam` individuais.
+- **Binding de parâmetros — `GET /api/funcionarios`** — controller e service migrados para `@ParameterObject @ModelAttribute FuncionarioFiltroDTO filtro` em vez de 8 `@RequestParam` individuais.
+- **Binding de parâmetros — `GET /api/planos-treino`** — controller e service migrados para `@ParameterObject @ModelAttribute PlanoTreinoFiltroDTO filtro` em vez de 5 `@RequestParam` individuais.
+- **Documentação Swagger** — adicionada `@ParameterObject` nos três endpoints GET paginados para que cada campo do record seja exibido como query param individual na Swagger UI, em vez de um único campo `object`.
+- **Testes de integração — Alunos** — atualizados para refletir a nova resposta: `$.content` → `$.alunos`, `$.totalElements` → `$.totalRegistros`; removidas asserções sobre `$.totalPages`, `$.number` e `$.size`.
+- **Testes de integração — Funcionários** — atualizados para refletir a nova resposta: `$.content` → `$.funcionarios`, `$.totalElements` → `$.totalRegistros`; removidas asserções sobre `$.totalPages`, `$.number` e `$.size`.
+
+---
+
 ## [1.1.0] - 2026-10-06
 
 ### Added
