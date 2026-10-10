@@ -1,7 +1,9 @@
 package com.academia.api.controllers;
 
+import com.academia.api.dtos.requests.FuncionarioFiltroDTO;
 import com.academia.api.dtos.requests.FuncionarioRequestDTO;
 import com.academia.api.dtos.requests.LoginRequestDTO;
+import com.academia.api.dtos.responses.FuncionarioPaginadoResponseDTO;
 import com.academia.api.dtos.responses.FuncionarioResponseDTO;
 import com.academia.api.dtos.responses.LoginResponseDTO;
 import com.academia.api.services.FuncionarioService;
@@ -9,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,21 +27,15 @@ public class FuncionarioController {
     private final FuncionarioService service;
 
     @GetMapping
-    @Operation(summary = "Listar todos os funcionários")
-    public ResponseEntity<List<FuncionarioResponseDTO>> listar() {
-        return ResponseEntity.ok(service.listarTodos());
+    @Operation(summary = "Listar funcionários com filtros e paginação")
+    public ResponseEntity<FuncionarioPaginadoResponseDTO> listar(@ParameterObject @ModelAttribute FuncionarioFiltroDTO filtro) {
+        return ResponseEntity.ok(service.listarTodos(filtro));
     }
 
     @GetMapping("/ativos")
     @Operation(summary = "Listar apenas funcionários ativos")
     public ResponseEntity<List<FuncionarioResponseDTO>> listarAtivos() {
         return ResponseEntity.ok(service.listarAtivos());
-    }
-
-    @GetMapping("/{id}")
-    @Operation(summary = "Buscar funcionário por ID")
-    public ResponseEntity<FuncionarioResponseDTO> buscar(@PathVariable Long id) {
-        return ResponseEntity.ok(service.buscarPorId(id));
     }
 
     @PostMapping

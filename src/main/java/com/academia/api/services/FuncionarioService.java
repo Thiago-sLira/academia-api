@@ -1,7 +1,9 @@
 package com.academia.api.services;
 
+import com.academia.api.dtos.requests.FuncionarioFiltroDTO;
 import com.academia.api.dtos.requests.FuncionarioRequestDTO;
 import com.academia.api.dtos.requests.LoginRequestDTO;
+import com.academia.api.dtos.responses.FuncionarioPaginadoResponseDTO;
 import com.academia.api.dtos.responses.FuncionarioResponseDTO;
 import com.academia.api.dtos.responses.LoginResponseDTO;
 import com.academia.api.exceptions.CredenciaisInvalidasException;
@@ -9,7 +11,9 @@ import com.academia.api.exceptions.FuncionarioNaoEncontradoException;
 import com.academia.api.models.entities.Funcionario;
 import com.academia.api.models.enums.PerfilFuncionario;
 import com.academia.api.repositories.FuncionarioRepository;
+import com.academia.api.specifications.FuncionarioSpecification;
 import com.academia.api.validation.EnumNormalizer;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,18 +47,28 @@ public class FuncionarioService {
         return new FuncionarioResponseDTO(repository.save(funcionario));
     }
 
-    public List<FuncionarioResponseDTO> listarTodos() {
-        return repository.findAll().stream().map(FuncionarioResponseDTO::new).toList();
+
+    public FuncionarioPaginadoResponseDTO listarTodos(FuncionarioFiltroDTO filtro) {
+        Page<Funcionario> page = repository.findAll(
+                FuncionarioSpecification.filtrar(
+                        filtro.id(),
+                        filtro.nome(),
+                        filtro.email(),
+                        filtro.registroAcademico(),
+                        filtro.perfil(),
+                        filtro.ativo()
+                ),
+                filtro.toPageable()
+        );
+
+        return new FuncionarioPaginadoResponseDTO(
+                page.map(FuncionarioResponseDTO::new).getContent(),
+                page.getTotalElements()
+        );
     }
 
     public List<FuncionarioResponseDTO> listarAtivos() {
         return repository.findByAtivoTrue().stream().map(FuncionarioResponseDTO::new).toList();
-    }
-
-    public FuncionarioResponseDTO buscarPorId(Long id) {
-        Funcionario funcionario = repository.findById(id)
-                .orElseThrow(() -> new FuncionarioNaoEncontradoException(id));
-        return new FuncionarioResponseDTO(funcionario);
     }
 
     @Transactional
@@ -79,8 +93,7 @@ public class FuncionarioService {
     }
 
     public LoginResponseDTO login(LoginRequestDTO dto) {
-        Funcionario funcionario = repository.findByEmail(dto.email())
-                .orElseThrow(CredenciaisInvalidasException::new);
+        Funcionario funcionario = repository.findByEmail(dto.email()).orElseThrow(CredenciaisInvalidasException::new);
 
         if (!passwordEncoder.matches(dto.senha(), funcionario.getSenha())) {
             throw new CredenciaisInvalidasException();

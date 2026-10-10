@@ -1,14 +1,20 @@
 package com.academia.api.services;
 
+import com.academia.api.dtos.requests.AlunoFiltroDTO;
 import com.academia.api.dtos.requests.AlunoRequestDTO;
+import com.academia.api.dtos.responses.AlunoPaginadoResponseDTO;
 import com.academia.api.dtos.responses.AlunoResponseDTO;
 import com.academia.api.exceptions.AlunoNaoEncontradoException;
 import com.academia.api.models.entities.Aluno;
+import com.academia.api.models.enums.Genero;
+import com.academia.api.models.enums.NivelExperiencia;
 import com.academia.api.repositories.AlunoRepository;
+import com.academia.api.specifications.AlunoSpecification;
+
+import com.academia.api.validation.EnumNormalizer;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 public class AlunoService {
@@ -28,8 +34,8 @@ public class AlunoService {
                 .idade(dto.idade())
                 .peso(dto.peso())
                 .altura(dto.altura())
-                .genero(com.academia.api.validation.EnumNormalizer.parseEnum(com.academia.api.models.enums.Genero.class, dto.genero()).orElse(null))
-                .nivelExperiencia(com.academia.api.validation.EnumNormalizer.parseEnum(com.academia.api.models.enums.NivelExperiencia.class, dto.nivelExperiencia()).orElse(null))
+                .genero(EnumNormalizer.parseEnum(Genero.class, dto.genero()).orElse(null))
+                .nivelExperiencia(EnumNormalizer.parseEnum(NivelExperiencia.class, dto.nivelExperiencia()).orElse(null))
                 .diasDisponiveisSemana(dto.diasDisponiveisSemana())
                 .restricaoMedica(dto.restricaoMedica())
                 .ativo(true)
@@ -38,20 +44,31 @@ public class AlunoService {
         return new AlunoResponseDTO(repository.save(aluno));
     }
 
-    public List<AlunoResponseDTO> listarTodos() {
-        return repository.findAll().stream().map(AlunoResponseDTO::new).toList();
-    }
+    public AlunoPaginadoResponseDTO listarTodos(AlunoFiltroDTO filtro) {
+        Page<Aluno> page = repository.findAll(
+                AlunoSpecification.filtrar(
+                        filtro.id(),
+                        filtro.nome(),
+                        filtro.email(),
+                        filtro.telefone(),
+                        filtro.idade(),
+                        filtro.peso(),
+                        filtro.altura(),
+                        filtro.genero(),
+                        filtro.nivelExperiencia()
+                ),
+                filtro.toPageable()
+        );
 
-    public AlunoResponseDTO buscarPorId(Long id) {
-        Aluno aluno = repository.findById(id)
-                .orElseThrow(() -> new AlunoNaoEncontradoException(id));
-        return new AlunoResponseDTO(aluno);
+        return new AlunoPaginadoResponseDTO(
+                page.map(AlunoResponseDTO::new).getContent(),
+                page.getTotalElements()
+        );
     }
 
     @Transactional
     public AlunoResponseDTO atualizar(Long id, AlunoRequestDTO dto) {
-        Aluno aluno = repository.findById(id)
-                .orElseThrow(() -> new AlunoNaoEncontradoException(id));
+        Aluno aluno = repository.findById(id).orElseThrow(() -> new AlunoNaoEncontradoException(id));
 
         aluno.setNome(dto.nome());
         aluno.setEmail(dto.email());

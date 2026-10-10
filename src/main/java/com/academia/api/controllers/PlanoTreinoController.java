@@ -1,5 +1,6 @@
 package com.academia.api.controllers;
 
+import com.academia.api.dtos.requests.PlanoTreinoFiltroDTO;
 import com.academia.api.dtos.requests.PlanoTreinoRequestDTO;
 import com.academia.api.dtos.responses.PlanoTreinoPaginadoResponseDTO;
 import com.academia.api.dtos.responses.PlanoTreinoResponseDTO;
@@ -8,7 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,14 +24,8 @@ public class PlanoTreinoController {
 
     @GetMapping
     @Operation(summary = "Listar planos de treino com paginação e filtros opcionais")
-    public ResponseEntity<PlanoTreinoPaginadoResponseDTO> listar(
-            @RequestParam(required = false) Long idTipoTreino,
-            @RequestParam(required = false) Long idProfessorCriador,
-            @RequestParam(required = false) String nivelRecomendado,
-            @RequestParam(defaultValue = "0") int paginaAtual,
-            @RequestParam(defaultValue = "10") int tamanhoPagina) {
-        return ResponseEntity.ok(service.listar(idTipoTreino, idProfessorCriador, nivelRecomendado,
-                PageRequest.of(paginaAtual, tamanhoPagina)));
+    public ResponseEntity<PlanoTreinoPaginadoResponseDTO> listar(@ParameterObject @ModelAttribute PlanoTreinoFiltroDTO filtro) {
+        return ResponseEntity.ok(service.listar(filtro));
     }
 
     @PostMapping

@@ -1,3 +1,4 @@
+
 package com.academia.api.aluno;
 
 import com.academia.api.BaseIntegrationTest;
@@ -14,30 +15,170 @@ class ListarAlunosIntegrationTest extends BaseIntegrationTest {
     private static final String URL_ALUNOS = "/api/alunos";
 
     @Test
-    @DisplayName("Deve retornar lista com todos os alunos quando existirem registros")
+    @DisplayName("Deve retornar alunos com paginação padrão")
     @DataSet(value = "datasets/aluno-existente.yml")
-    void deveRetornarListaComAlunosQuandoExistiremRegistros() throws Exception {
+    void deveRetornarAlunosComPaginacaoPadrao() throws Exception {
         mockMvc.perform(get(URL_ALUNOS))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].nome").value("João da Silva"))
-                .andExpect(jsonPath("$[0].email").value("joao.silva@email.com"))
-                .andExpect(jsonPath("$[0].genero").value("MASCULINO"))
-                .andExpect(jsonPath("$[0].nivelExperiencia").value("INTERMEDIARIO"))
-                .andExpect(jsonPath("$[0].ativo").value(true))
-                .andExpect(jsonPath("$[1].id").value(2))
-                .andExpect(jsonPath("$[1].nome").value("Maria Souza"))
-                .andExpect(jsonPath("$[1].email").value("maria.souza@email.com"))
-                .andExpect(jsonPath("$[1].ativo").value(true));
+                .andExpect(jsonPath("$.alunos.length()").value(2))
+                .andExpect(jsonPath("$.alunos[0].id").value(1))
+                .andExpect(jsonPath("$.alunos[0].nome").value("João da Silva"))
+                .andExpect(jsonPath("$.alunos[0].email").value("joao.silva@email.com"))
+                .andExpect(jsonPath("$.alunos[0].genero").value("MASCULINO"))
+                .andExpect(jsonPath("$.alunos[0].nivelExperiencia").value("INTERMEDIARIO"))
+                .andExpect(jsonPath("$.alunos[0].ativo").value(true))
+                .andExpect(jsonPath("$.alunos[1].id").value(2))
+                .andExpect(jsonPath("$.alunos[1].nome").value("Maria Souza"))
+                .andExpect(jsonPath("$.alunos[1].email").value("maria.souza@email.com"))
+                .andExpect(jsonPath("$.alunos[1].ativo").value(true))
+                .andExpect(jsonPath("$.totalRegistros").value(2));
     }
 
     @Test
-    @DisplayName("Deve retornar lista vazia quando não houver alunos cadastrados")
+    @DisplayName("Deve retornar lista vazia quando não houver alunos")
     @DataSet(value = "datasets/alunos-vazio.yml")
-    void deveRetornarListaVaziaQuandoNaoHouverAlunos() throws Exception {
+    void deveRetornarPaginaVaziaQuandoNaoHouverAlunos() throws Exception {
         mockMvc.perform(get(URL_ALUNOS))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(0));
+                .andExpect(jsonPath("$.alunos").isEmpty())
+                .andExpect(jsonPath("$.totalRegistros").value(0));
+    }
+
+    @Test
+    @DisplayName("Deve filtrar alunos pelo nome")
+    @DataSet(value = "datasets/aluno-existente.yml")
+    void deveFiltrarAlunosPorNome() throws Exception {
+        mockMvc.perform(get(URL_ALUNOS)
+                        .param("nome", "Maria"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.alunos.length()").value(1))
+                .andExpect(jsonPath("$.alunos[0].nome").value("Maria Souza"))
+                .andExpect(jsonPath("$.totalRegistros").value(1));
+    }
+
+    @Test
+    @DisplayName("Deve filtrar alunos pelo email")
+    @DataSet(value = "datasets/aluno-existente.yml")
+    void deveFiltrarAlunosPorEmail() throws Exception {
+        mockMvc.perform(get(URL_ALUNOS)
+                        .param("email", "joao.silva"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.alunos.length()").value(1))
+                .andExpect(jsonPath("$.alunos[0].id").value(1));
+    }
+
+    @Test
+    @DisplayName("Deve filtrar alunos pelo ID")
+    @DataSet(value = "datasets/aluno-existente.yml")
+    void deveFiltrarAlunosPorId() throws Exception {
+        mockMvc.perform(get(URL_ALUNOS)
+                        .param("id", "2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.alunos.length()").value(1))
+                .andExpect(jsonPath("$.alunos[0].id").value(2));
+    }
+
+    @Test
+    @DisplayName("Deve permitir configurar tamanho da página")
+    @DataSet(value = "datasets/aluno-existente.yml")
+    void devePermitirConfigurarTamanhoDaPagina() throws Exception {
+        mockMvc.perform(get(URL_ALUNOS)
+                        .param("paginaAtual", "0")
+                        .param("tamanhoPagina", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.alunos.length()").value(1))
+                .andExpect(jsonPath("$.totalRegistros").value(2));
+    }
+
+    @Test
+    @DisplayName("Deve permitir consultar a segunda página")
+    @DataSet(value = "datasets/aluno-existente.yml")
+    void devePermitirConsultarSegundaPagina() throws Exception {
+        mockMvc.perform(get(URL_ALUNOS)
+                        .param("paginaAtual", "1")
+                        .param("tamanhoPagina", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.alunos.length()").value(1))
+                .andExpect(jsonPath("$.totalRegistros").value(2))
+                .andExpect(jsonPath("$.alunos[0].id").value(2));
+    }
+
+    @Test
+    @DisplayName("Deve combinar filtros de nome e gênero")
+    @DataSet(value = "datasets/aluno-existente.yml")
+    void deveCombinarFiltros() throws Exception {
+        mockMvc.perform(get(URL_ALUNOS)
+                        .param("nome", "João")
+                        .param("genero", "MASCULINO"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.alunos.length()").value(1))
+                .andExpect(jsonPath("$.alunos[0].nome").value("João da Silva"))
+                .andExpect(jsonPath("$.totalRegistros").value(1));
+    }
+
+    @Test
+    @DisplayName("Deve filtrar alunos pelo telefone")
+    @DataSet(value = "datasets/aluno-existente.yml")
+    void deveFiltrarAlunosPorTelefone() throws Exception {
+        mockMvc.perform(get(URL_ALUNOS)
+                        .param("telefone", "11987654321"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.alunos.length()").value(1))
+                .andExpect(jsonPath("$.alunos[0].id").value(1));
+    }
+
+    @Test
+    @DisplayName("Deve filtrar alunos pela idade")
+    @DataSet(value = "datasets/aluno-existente.yml")
+    void deveFiltrarAlunosPorIdade() throws Exception {
+        mockMvc.perform(get(URL_ALUNOS)
+                        .param("idade", "25"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.alunos.length()").value(1))
+                .andExpect(jsonPath("$.alunos[0].id").value(1));
+    }
+
+    @Test
+    @DisplayName("Deve filtrar alunos pelo peso")
+    @DataSet(value = "datasets/aluno-existente.yml")
+    void deveFiltrarAlunosPorPeso() throws Exception {
+        mockMvc.perform(get(URL_ALUNOS)
+                        .param("peso", "78.50"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.alunos.length()").value(1))
+                .andExpect(jsonPath("$.alunos[0].id").value(1));
+    }
+
+    @Test
+    @DisplayName("Deve filtrar alunos pela altura")
+    @DataSet(value = "datasets/aluno-existente.yml")
+    void deveFiltrarAlunosPorAltura() throws Exception {
+        mockMvc.perform(get(URL_ALUNOS)
+                        .param("altura", "1.80"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.alunos.length()").value(1))
+                .andExpect(jsonPath("$.alunos[0].id").value(1));
+    }
+
+    @Test
+    @DisplayName("Deve filtrar alunos pelo gênero")
+    @DataSet(value = "datasets/aluno-existente.yml")
+    void deveFiltrarAlunosPorGenero() throws Exception {
+        mockMvc.perform(get(URL_ALUNOS)
+                        .param("genero", "MASCULINO"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.alunos.length()").value(1))
+                .andExpect(jsonPath("$.alunos[0].id").value(1));
+    }
+
+    @Test
+    @DisplayName("Deve filtrar alunos pelo nível de experiência")
+    @DataSet(value = "datasets/aluno-existente.yml")
+    void deveFiltrarAlunosPorNivelExperiencia() throws Exception {
+        mockMvc.perform(get(URL_ALUNOS)
+                        .param("nivelExperiencia", "INTERMEDIARIO"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.alunos.length()").value(1))
+                .andExpect(jsonPath("$.alunos[0].id").value(1));
     }
 }
