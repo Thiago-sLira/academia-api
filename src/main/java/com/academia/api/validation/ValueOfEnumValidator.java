@@ -9,11 +9,11 @@ import java.util.List;
 public class ValueOfEnumValidator implements ConstraintValidator<ValueOfEnum, CharSequence> {
 
     private List<String> acceptedValues;
-    private Class<? extends Enum<?>> enumClass;
+    //private Class<? extends Enum<?>> enumClass;
 
     @Override
     public void initialize(ValueOfEnum annotation) {
-        this.enumClass = annotation.enumClass();
+        //this.enumClass = annotation.enumClass();
         this.acceptedValues = Arrays.stream(annotation.enumClass().getEnumConstants())
                 .map(Enum::name)
                 .toList();

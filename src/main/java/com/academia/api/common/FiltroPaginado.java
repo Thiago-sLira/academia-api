@@ -2,7 +2,7 @@ package com.academia.api.common;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+//import org.springframework.data.domain.Sort;
 
 /**
  * Contrato compartilhado por todos os DTOs de filtro paginado.
