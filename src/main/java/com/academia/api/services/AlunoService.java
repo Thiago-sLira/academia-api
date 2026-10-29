@@ -4,11 +4,14 @@ import com.academia.api.dtos.requests.AlunoFiltroDTO;
 import com.academia.api.dtos.requests.AlunoRequestDTO;
 import com.academia.api.dtos.responses.AlunoPaginadoResponseDTO;
 import com.academia.api.dtos.responses.AlunoResponseDTO;
+import com.academia.api.exceptions.AlunoComTreinoAtivoException;
 import com.academia.api.exceptions.AlunoNaoEncontradoException;
 import com.academia.api.models.entities.Aluno;
 import com.academia.api.models.enums.Genero;
 import com.academia.api.models.enums.NivelExperiencia;
+import com.academia.api.models.enums.StatusVinculo;
 import com.academia.api.repositories.AlunoRepository;
+import com.academia.api.repositories.AlunoTreinoRepository;
 import com.academia.api.specifications.AlunoSpecification;
 
 import com.academia.api.validation.EnumNormalizer;
@@ -20,9 +23,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class AlunoService {
 
     private final AlunoRepository repository;
+    private final AlunoTreinoRepository alunoTreinoRepository;
 
-    public AlunoService(AlunoRepository repository) {
+    public AlunoService(AlunoRepository repository, AlunoTreinoRepository alunoTreinoRepository) {
         this.repository = repository;
+        this.alunoTreinoRepository = alunoTreinoRepository;
     }
 
     @Transactional
@@ -88,6 +93,10 @@ public class AlunoService {
     public void deletar(Long id) {
         if (!repository.existsById(id)) {
             throw new AlunoNaoEncontradoException(id);
+        }
+        if (alunoTreinoRepository.existsByAlunoIdAndStatus(id, StatusVinculo.ATIVO)) {
+            throw new AlunoComTreinoAtivoException(
+                    "Registro de aluno com plano de treino ativo não pode ser removido");
         }
         repository.deleteById(id);
     }

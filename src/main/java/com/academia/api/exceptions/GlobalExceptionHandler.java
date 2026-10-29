@@ -120,4 +120,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(new ErroRespostaDTO(HttpStatus.FORBIDDEN.value(), ex.getMessage()));
     }
+
+    @ExceptionHandler(AlunoComTreinoAtivoException.class)
+    public ResponseEntity<ErroRespostaDTO> handleAlunoComTreinoAtivo(AlunoComTreinoAtivoException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErroRespostaDTO(HttpStatus.CONFLICT.value(), ex.getMessage()));
+    }
 }

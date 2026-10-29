@@ -1,3 +1,5 @@
+tb_aluno_treino: []
+
 tb_tipo_treino:
   - id_tipo_treino: 1
     nome: "Musculação"

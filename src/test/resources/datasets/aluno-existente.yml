@@ -1,3 +1,5 @@
+tb_aluno_treino: []
+
 tb_aluno:
   - id_aluno: 1
     nome: "João da Silva"
