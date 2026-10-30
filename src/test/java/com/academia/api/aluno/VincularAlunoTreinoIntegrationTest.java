@@ -135,4 +135,33 @@ class VincularAlunoTreinoIntegrationTest extends BaseIntegrationTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404));
     }
+
+    @Test
+    @DisplayName("Deve retornar 409 quando aluno já possui vínculo ativo")
+    @DataSet(value = "datasets/aluno-com-treino-ativo.yml")
+    void deveRetornar409QuandoAlunoJaPossuiVinculoAtivo() throws Exception {
+        VinculoAlunoTreinoRequestDTO dto = new VinculoAlunoTreinoRequestDTO(
+                1L, 1L, LocalDate.of(2026, 1, 10), null, null);
+
+        mockMvc.perform(post(URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.erro").value("O aluno já possui um vínculo de plano de treino ativo"));
+    }
+
+    @Test
+    @DisplayName("Deve vincular com sucesso quando aluno só possui vínculos inativos")
+    @DataSet(value = "datasets/aluno-com-treino-inativo.yml")
+    void deveVincularComSucessoQuandoAlunoSoPossuiVinculosInativos() throws Exception {
+        VinculoAlunoTreinoRequestDTO dto = new VinculoAlunoTreinoRequestDTO(
+                1L, 1L, LocalDate.of(2026, 1, 10), null, null);
+
+        mockMvc.perform(post(URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value("ATIVO"));
+    }
 }

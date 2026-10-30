@@ -2,6 +2,7 @@ package com.academia.api.services;
 
 import com.academia.api.dtos.requests.VinculoAlunoTreinoRequestDTO;
 import com.academia.api.dtos.responses.VinculoAlunoTreinoResponseDTO;
+import com.academia.api.exceptions.AlunoComTreinoAtivoException;
 import com.academia.api.exceptions.AlunoNaoEncontradoException;
 import com.academia.api.exceptions.PlanoTreinoNaoEncontradoException;
 import com.academia.api.models.entities.Aluno;
@@ -33,6 +34,11 @@ public class AlunoTreinoService {
     public VinculoAlunoTreinoResponseDTO vincular(VinculoAlunoTreinoRequestDTO dto) {
         Aluno aluno = alunoRepository.findById(dto.idAluno())
                 .orElseThrow(() -> new AlunoNaoEncontradoException(dto.idAluno()));
+
+        if (alunoTreinoRepository.existsByAlunoIdAndStatus(dto.idAluno(), StatusVinculo.ATIVO)) {
+            throw new AlunoComTreinoAtivoException(
+                    "O aluno já possui um vínculo de plano de treino ativo");
+        }
 
         PlanoTreino plano = planoTreinoRepository.findById(dto.idPlano())
                 .orElseThrow(() -> new PlanoTreinoNaoEncontradoException(dto.idPlano()));

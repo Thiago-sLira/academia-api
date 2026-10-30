@@ -6,6 +6,8 @@ import com.github.database.rider.core.api.dataset.DataSet;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -180,5 +182,25 @@ class ListarAlunosIntegrationTest extends BaseIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.alunos.length()").value(1))
                 .andExpect(jsonPath("$.alunos[0].id").value(1));
+    }
+
+    @Test
+    @DisplayName("Deve retornar treinoAtual populado para aluno com vínculo ativo")
+    @DataSet(value = "datasets/aluno-com-treino-ativo-listagem.yml")
+    void deveRetornarTreinoAtualPopuladoParaAlunoComVinculoAtivo() throws Exception {
+        mockMvc.perform(get(URL_ALUNOS))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.alunos[0].treinoAtual", notNullValue()))
+                .andExpect(jsonPath("$.alunos[0].treinoAtual.id").value(1))
+                .andExpect(jsonPath("$.alunos[0].treinoAtual.titulo").value("Plano Base"));
+    }
+
+    @Test
+    @DisplayName("Deve retornar treinoAtual nulo para aluno sem vínculo ativo")
+    @DataSet(value = "datasets/aluno-com-treino-ativo-listagem.yml")
+    void deveRetornarTreinoAtualNuloParaAlunoSemVinculoAtivo() throws Exception {
+        mockMvc.perform(get(URL_ALUNOS))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.alunos[1].treinoAtual", nullValue()));
     }
 }

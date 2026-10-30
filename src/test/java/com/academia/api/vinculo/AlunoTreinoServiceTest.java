@@ -2,6 +2,7 @@ package com.academia.api.vinculo;
 
 import com.academia.api.dtos.requests.VinculoAlunoTreinoRequestDTO;
 import com.academia.api.dtos.responses.VinculoAlunoTreinoResponseDTO;
+import com.academia.api.exceptions.AlunoComTreinoAtivoException;
 import com.academia.api.exceptions.AlunoNaoEncontradoException;
 import com.academia.api.exceptions.PlanoTreinoNaoEncontradoException;
 import com.academia.api.models.entities.Aluno;
@@ -26,6 +27,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -98,5 +100,19 @@ class AlunoTreinoServiceTest {
                 1L, 99L, LocalDate.of(2026, 1, 10), null, null);
 
         assertThrows(PlanoTreinoNaoEncontradoException.class, () -> service.vincular(dto));
+    }
+
+    @Test
+    @DisplayName("Deve lançar AlunoComTreinoAtivoException e não salvar quando aluno já tem vínculo ativo")
+    void vincular_comAlunoJaComVinculoAtivo_deveLancarAlunoComTreinoAtivoException() {
+        Aluno aluno = Aluno.builder().build();
+        when(alunoRepository.findById(1L)).thenReturn(Optional.of(aluno));
+        when(alunoTreinoRepository.existsByAlunoIdAndStatus(1L, StatusVinculo.ATIVO)).thenReturn(true);
+
+        VinculoAlunoTreinoRequestDTO dto = new VinculoAlunoTreinoRequestDTO(
+                1L, 1L, LocalDate.of(2026, 1, 10), null, null);
+
+        assertThrows(AlunoComTreinoAtivoException.class, () -> service.vincular(dto));
+        verify(alunoTreinoRepository, never()).save(any());
     }
 }
