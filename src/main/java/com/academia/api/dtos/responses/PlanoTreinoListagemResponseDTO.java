@@ -4,6 +4,7 @@ import com.academia.api.models.entities.PlanoTreino;
 import com.academia.api.models.enums.NivelExperiencia;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record PlanoTreinoListagemResponseDTO(
         Long idPlanoTreino,
@@ -15,7 +16,8 @@ public record PlanoTreinoListagemResponseDTO(
         Integer idTipoTreino,
         String nomeTipoTreino,
         Long idProfessorCriador,
-        String nomeProfessor
+        String nomeProfessor,
+        List<AlunoResumoDTO> alunosVinculados
 ) {
     public PlanoTreinoListagemResponseDTO(PlanoTreino plano) {
         this(
@@ -28,7 +30,24 @@ public record PlanoTreinoListagemResponseDTO(
                 plano.getTipoTreino().getId(),
                 plano.getTipoTreino().getNome(),
                 plano.getProfessorCriador().getId(),
-                plano.getProfessorCriador().getNome()
+                plano.getProfessorCriador().getNome(),
+                List.of()
+        );
+    }
+
+    public PlanoTreinoListagemResponseDTO(PlanoTreino plano, List<AlunoResumoDTO> alunosVinculados) {
+        this(
+                plano.getId(),
+                plano.getTitulo(),
+                plano.getDescricao(),
+                plano.getNivelRecomendado(),
+                plano.getAtivo(),
+                plano.getCriadoEm(),
+                plano.getTipoTreino().getId(),
+                plano.getTipoTreino().getNome(),
+                plano.getProfessorCriador().getId(),
+                plano.getProfessorCriador().getNome(),
+                alunosVinculados
         );
     }
 }

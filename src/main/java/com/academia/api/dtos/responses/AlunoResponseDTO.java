@@ -18,7 +18,8 @@ public record AlunoResponseDTO(
         NivelExperiencia nivelExperiencia,
         Integer diasDisponiveisSemana,
         String restricaoMedica,
-        Boolean ativo
+        Boolean ativo,
+        TreinoResumoDTO treinoAtual
 ) {
     public AlunoResponseDTO(Aluno aluno) {
         this(
@@ -33,7 +34,26 @@ public record AlunoResponseDTO(
                 aluno.getNivelExperiencia(),
                 aluno.getDiasDisponiveisSemana(),
                 aluno.getRestricaoMedica(),
-                aluno.getAtivo()
+                aluno.getAtivo(),
+                null
+        );
+    }
+
+    public AlunoResponseDTO(Aluno aluno, TreinoResumoDTO treinoAtual) {
+        this(
+                aluno.getId(),
+                aluno.getNome(),
+                aluno.getEmail(),
+                aluno.getTelefone(),
+                aluno.getIdade(),
+                aluno.getPeso(),
+                aluno.getAltura(),
+                aluno.getGenero(),
+                aluno.getNivelExperiencia(),
+                aluno.getDiasDisponiveisSemana(),
+                aluno.getRestricaoMedica(),
+                aluno.getAtivo(),
+                treinoAtual
         );
     }
 }

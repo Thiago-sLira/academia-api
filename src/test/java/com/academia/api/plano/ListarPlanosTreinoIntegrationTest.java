@@ -5,6 +5,7 @@ import com.github.database.rider.core.api.dataset.DataSet;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -93,5 +94,26 @@ class ListarPlanosTreinoIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(get(URL).param("nivelRecomendado", "NIVEL_DESCONHECIDO"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalRegistros").value(12));
+    }
+
+    @Test
+    @DisplayName("Deve retornar alunosVinculados com aluno para plano com vínculo ativo")
+    @DataSet(value = "datasets/plano-com-aluno-vinculado.yml")
+    void deveRetornarAlunosVinculadosParaPlanoComVinculosAtivos() throws Exception {
+        mockMvc.perform(get(URL))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.planos[0].alunosVinculados", hasSize(1)))
+                .andExpect(jsonPath("$.planos[0].alunosVinculados[0].id").value(1))
+                .andExpect(jsonPath("$.planos[0].alunosVinculados[0].nome").value("João da Silva"))
+                .andExpect(jsonPath("$.planos[0].alunosVinculados[0].email").value("joao.silva@email.com"));
+    }
+
+    @Test
+    @DisplayName("Deve retornar alunosVinculados vazio para plano sem vínculos ativos")
+    @DataSet(value = "datasets/plano-com-aluno-vinculado.yml")
+    void deveRetornarListaVaziaDeAlunosVinculadosParaPlanoSemVinculos() throws Exception {
+        mockMvc.perform(get(URL))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.planos[1].alunosVinculados", hasSize(0)));
     }
 }
