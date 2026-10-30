@@ -1,3 +1,5 @@
+tb_aluno_treino: []
+
 tb_funcionario:
   - id_funcionario: 1
     nome: "Admin Teste"

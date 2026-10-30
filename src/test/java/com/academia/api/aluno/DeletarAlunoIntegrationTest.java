@@ -46,4 +46,14 @@ class DeletarAlunoIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.erro", containsString("'abc'")))
                 .andExpect(jsonPath("$.erro", containsString("número inteiro")));
     }
+
+    @Test
+    @DisplayName("Deve retornar 409 quando o aluno possui plano de treino com status ATIVO")
+    @DataSet(value = "datasets/aluno-com-treino-ativo.yml")
+    void deveRetornar409QuandoAlunoTemTreinoAtivo() throws Exception {
+        mockMvc.perform(delete(URL_ALUNO_POR_ID, 1))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.erro", containsString("ativo")));
+    }
 }
