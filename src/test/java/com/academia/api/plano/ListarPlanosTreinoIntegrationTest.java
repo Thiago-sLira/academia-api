@@ -116,4 +116,17 @@ class ListarPlanosTreinoIntegrationTest extends BaseIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.planos[1].alunosVinculados", hasSize(0)));
     }
+
+    @Test
+    @DisplayName("Deve retornar equipamentos vinculados ao plano de treino com suas propriedades")
+    @DataSet(value = "datasets/plano-treino-existente.yml")
+    void deveRetornarEquipamentosVinculadosAoPlano() throws Exception {
+        mockMvc.perform(get(URL))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.planos[0].equipamentos", hasSize(1)))
+                .andExpect(jsonPath("$.planos[0].equipamentos[0].id").value(1))
+                .andExpect(jsonPath("$.planos[0].equipamentos[0].nome").value("Supino Reto"))
+                .andExpect(jsonPath("$.planos[0].equipamentos[0].categoria").value("SUPERIORES"))
+                .andExpect(jsonPath("$.planos[0].equipamentos[0].descricao").value("Banco para supino com barra olímpica"));
+    }
 }

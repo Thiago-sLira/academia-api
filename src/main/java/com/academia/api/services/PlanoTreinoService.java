@@ -3,12 +3,15 @@ package com.academia.api.services;
 import com.academia.api.dtos.requests.PlanoTreinoFiltroDTO;
 import com.academia.api.dtos.requests.PlanoTreinoRequestDTO;
 import com.academia.api.dtos.responses.AlunoResumoDTO;
+import com.academia.api.dtos.responses.EquipamentoResumoDTO;
 import com.academia.api.dtos.responses.PlanoTreinoListagemResponseDTO;
 import com.academia.api.dtos.responses.PlanoTreinoPaginadoResponseDTO;
 import com.academia.api.dtos.responses.PlanoTreinoResponseDTO;
+import com.academia.api.exceptions.EquipamentoNaoEncontradoException;
 import com.academia.api.exceptions.PerfilNaoAutorizadoException;
 import com.academia.api.exceptions.ProfessorNaoEncontradoException;
 import com.academia.api.exceptions.TipoTreinoNaoEncontradoException;
+import com.academia.api.models.entities.Equipamento;
 import com.academia.api.models.entities.Funcionario;
 import com.academia.api.models.entities.PlanoTreino;
 import com.academia.api.models.entities.TipoTreino;
@@ -16,6 +19,7 @@ import com.academia.api.models.enums.NivelExperiencia;
 import com.academia.api.models.enums.PerfilFuncionario;
 import com.academia.api.models.enums.StatusVinculo;
 import com.academia.api.repositories.AlunoTreinoRepository;
+import com.academia.api.repositories.EquipamentoRepository;
 import com.academia.api.repositories.FuncionarioRepository;
 import com.academia.api.repositories.PlanoTreinoRepository;
 import com.academia.api.repositories.TipoTreinoRepository;
@@ -26,10 +30,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,15 +40,18 @@ public class PlanoTreinoService {
     private final FuncionarioRepository funcionarioRepository;
     private final TipoTreinoRepository tipoTreinoRepository;
     private final AlunoTreinoRepository alunoTreinoRepository;
+    private final EquipamentoRepository equipamentoRepository;
 
     public PlanoTreinoService(PlanoTreinoRepository planoTreinoRepository,
                               FuncionarioRepository funcionarioRepository,
                               TipoTreinoRepository tipoTreinoRepository,
-                              AlunoTreinoRepository alunoTreinoRepository) {
+                              AlunoTreinoRepository alunoTreinoRepository,
+                              EquipamentoRepository equipamentoRepository) {
         this.planoTreinoRepository = planoTreinoRepository;
         this.funcionarioRepository = funcionarioRepository;
         this.tipoTreinoRepository = tipoTreinoRepository;
         this.alunoTreinoRepository = alunoTreinoRepository;
+        this.equipamentoRepository = equipamentoRepository;
     }
 
     @Transactional
@@ -65,12 +69,27 @@ public class PlanoTreinoService {
         NivelExperiencia nivel = EnumNormalizer.parseEnum(NivelExperiencia.class, dto.nivelRecomendado())
                 .orElse(null);
 
+        Set<Integer> uniqueEquipamentoIds = new HashSet<>(dto.equipamentosIds());
+        List<Equipamento> equipamentos = equipamentoRepository.findAllById(uniqueEquipamentoIds);
+
+        if (equipamentos.size() != uniqueEquipamentoIds.size()) {
+            Set<Integer> encontradosIds = equipamentos.stream()
+                    .map(Equipamento::getId)
+                    .collect(Collectors.toSet());
+            Integer inexistenteId = uniqueEquipamentoIds.stream()
+                    .filter(id -> !encontradosIds.contains(id))
+                    .findFirst()
+                    .orElse(null);
+            throw new EquipamentoNaoEncontradoException(inexistenteId);
+        }
+
         PlanoTreino plano = PlanoTreino.builder()
                 .tipoTreino(tipoTreino)
                 .professorCriador(professor)
                 .titulo(dto.titulo())
                 .descricao(dto.descricao())
                 .nivelRecomendado(nivel)
+                .equipamentos(equipamentos)
                 .build();
 
         return new PlanoTreinoResponseDTO(planoTreinoRepository.save(plano));
@@ -114,10 +133,21 @@ public class PlanoTreinoService {
                                                 at.getAluno().getEmail()),
                                         Collectors.toList())));
 
+        Map<Long, List<EquipamentoResumoDTO>> equipamentosMap = planIds.isEmpty()
+                ? Collections.emptyMap()
+                : planoTreinoRepository.findAllWithEquipamentosByIdIn(planIds)
+                        .stream()
+                        .collect(Collectors.toMap(
+                                PlanoTreino::getId,
+                                p -> p.getEquipamentos().stream().map(EquipamentoResumoDTO::new).toList(),
+                                (e1, e2) -> e1
+                        ));
+
         List<PlanoTreinoListagemResponseDTO> dtos = pagina.getContent().stream()
                 .map(plano -> new PlanoTreinoListagemResponseDTO(
                         plano,
-                        alunosMap.getOrDefault(plano.getId(), List.of())))
+                        alunosMap.getOrDefault(plano.getId(), List.of()),
+                        equipamentosMap.getOrDefault(plano.getId(), List.of())))
                 .collect(Collectors.toList());
 
         return new PlanoTreinoPaginadoResponseDTO(dtos, pagina.getTotalElements());

@@ -8,6 +8,8 @@ import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tb_plano_treino")
@@ -44,6 +46,15 @@ public class PlanoTreino {
 
     @Builder.Default
     private Boolean ativo = true;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "tb_plano_equipamento",
+            joinColumns = @JoinColumn(name = "id_plano"),
+            inverseJoinColumns = @JoinColumn(name = "id_equipamento")
+    )
+    @Builder.Default
+    private List<Equipamento> equipamentos = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "criado_em", updatable = false)

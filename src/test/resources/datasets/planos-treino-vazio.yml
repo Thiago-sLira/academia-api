@@ -1,4 +1,17 @@
 tb_aluno_treino: []
+tb_plano_equipamento: []
+
+tb_equipamento:
+  - id_equipamento: 1
+    nome: "Supino Reto"
+    categoria: "SUPERIORES"
+    descricao: "Banco para supino com barra olímpica"
+    ativo: true
+  - id_equipamento: 2
+    nome: "Leg Press 45"
+    categoria: "INFERIORES"
+    descricao: "Máquina de leg press 45 graus com anilhas"
+    ativo: true
 
 tb_tipo_treino:
   - id_tipo_treino: 1

@@ -1,5 +1,12 @@
 tb_aluno_treino: []
 
+tb_equipamento:
+  - id_equipamento: 1
+    nome: "Supino Reto"
+    categoria: "SUPERIORES"
+    descricao: "Banco para supino com barra olímpica"
+    ativo: true
+
 tb_tipo_treino:
   - id_tipo_treino: 1
     nome: "Musculação"
@@ -36,3 +43,7 @@ tb_aluno:
     dias_disponiveis_semana: 4
     restricao_medica: null
     ativo: true
+
+tb_plano_equipamento:
+  - id_plano: 1
+    id_equipamento: 1
