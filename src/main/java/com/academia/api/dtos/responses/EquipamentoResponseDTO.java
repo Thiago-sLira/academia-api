@@ -6,7 +6,7 @@ import com.academia.api.models.enums.CategoriaEquipamento;
 import java.time.LocalDateTime;
 
 public record EquipamentoResponseDTO(
-        Long id,
+        Integer id,
         String nome,
         CategoriaEquipamento categoria,
         String descricao,
