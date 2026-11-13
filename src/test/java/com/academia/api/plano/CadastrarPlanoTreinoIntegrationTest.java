@@ -8,6 +8,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
+import java.util.List;
+
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -24,7 +26,8 @@ class CadastrarPlanoTreinoIntegrationTest extends BaseIntegrationTest {
                 10L,
                 "Plano de Hipertrofia",
                 "Plano focado em ganho de massa muscular para nível intermediário.",
-                "INTERMEDIARIO"
+                "INTERMEDIARIO",
+                List.of(1, 2)
         );
     }
 
@@ -45,7 +48,7 @@ class CadastrarPlanoTreinoIntegrationTest extends BaseIntegrationTest {
     @ExpectedDataSet(value = "datasets/planos-treino-vazio.yml")
     void deveRetornar400QuandoIdTipoTreinoNulo() throws Exception {
         PlanoTreinoRequestDTO dto = new PlanoTreinoRequestDTO(
-                null, 10L, "Titulo válido", "Descrição válida do plano de treino.", "INICIANTE"
+                null, 10L, "Titulo válido", "Descrição válida do plano de treino.", "INICIANTE", List.of(1)
         );
 
         mockMvc.perform(post(URL)
@@ -62,7 +65,7 @@ class CadastrarPlanoTreinoIntegrationTest extends BaseIntegrationTest {
     @ExpectedDataSet(value = "datasets/planos-treino-vazio.yml")
     void deveRetornar400QuandoIdProfessorCriadorNulo() throws Exception {
         PlanoTreinoRequestDTO dto = new PlanoTreinoRequestDTO(
-                1L, null, "Titulo válido", "Descrição válida do plano de treino.", "INICIANTE"
+                1L, null, "Titulo válido", "Descrição válida do plano de treino.", "INICIANTE", List.of(1)
         );
 
         mockMvc.perform(post(URL)
@@ -79,7 +82,7 @@ class CadastrarPlanoTreinoIntegrationTest extends BaseIntegrationTest {
     @ExpectedDataSet(value = "datasets/planos-treino-vazio.yml")
     void deveRetornar400QuandoTituloEmBranco() throws Exception {
         PlanoTreinoRequestDTO dto = new PlanoTreinoRequestDTO(
-                1L, 10L, "", "Descrição válida do plano de treino.", "INICIANTE"
+                1L, 10L, "", "Descrição válida do plano de treino.", "INICIANTE", List.of(1)
         );
 
         mockMvc.perform(post(URL)
@@ -97,7 +100,7 @@ class CadastrarPlanoTreinoIntegrationTest extends BaseIntegrationTest {
     void deveRetornar400QuandoTituloAcimaDe100Chars() throws Exception {
         String titulo101 = "A".repeat(101);
         PlanoTreinoRequestDTO dto = new PlanoTreinoRequestDTO(
-                1L, 10L, titulo101, "Descrição válida do plano de treino.", "INICIANTE"
+                1L, 10L, titulo101, "Descrição válida do plano de treino.", "INICIANTE", List.of(1)
         );
 
         mockMvc.perform(post(URL)
@@ -115,7 +118,7 @@ class CadastrarPlanoTreinoIntegrationTest extends BaseIntegrationTest {
     @ExpectedDataSet(value = "datasets/planos-treino-vazio.yml")
     void deveRetornar400QuandoDescricaoEmBranco() throws Exception {
         PlanoTreinoRequestDTO dto = new PlanoTreinoRequestDTO(
-                1L, 10L, "Titulo válido", "", "INICIANTE"
+                1L, 10L, "Titulo válido", "", "INICIANTE", List.of(1)
         );
 
         mockMvc.perform(post(URL)
@@ -133,7 +136,7 @@ class CadastrarPlanoTreinoIntegrationTest extends BaseIntegrationTest {
     void deveRetornar400QuandoDescricaoAcimaDe250Chars() throws Exception {
         String descricao251 = "D".repeat(251);
         PlanoTreinoRequestDTO dto = new PlanoTreinoRequestDTO(
-                1L, 10L, "Titulo válido", descricao251, "INICIANTE"
+                1L, 10L, "Titulo válido", descricao251, "INICIANTE", List.of(1)
         );
 
         mockMvc.perform(post(URL)
@@ -151,7 +154,7 @@ class CadastrarPlanoTreinoIntegrationTest extends BaseIntegrationTest {
     @ExpectedDataSet(value = "datasets/planos-treino-vazio.yml")
     void deveRetornar400QuandoNivelRecomendadoEmBranco() throws Exception {
         PlanoTreinoRequestDTO dto = new PlanoTreinoRequestDTO(
-                1L, 10L, "Titulo válido", "Descrição válida do plano de treino.", ""
+                1L, 10L, "Titulo válido", "Descrição válida do plano de treino.", "", List.of(1)
         );
 
         mockMvc.perform(post(URL)
@@ -167,7 +170,7 @@ class CadastrarPlanoTreinoIntegrationTest extends BaseIntegrationTest {
     @ExpectedDataSet(value = "datasets/planos-treino-vazio.yml")
     void deveRetornar400ComUserHelpQuandoNivelRecomendadoInvalido() throws Exception {
         PlanoTreinoRequestDTO dto = new PlanoTreinoRequestDTO(
-                1L, 10L, "Titulo válido", "Descrição válida do plano de treino.", "EXPERT"
+                1L, 10L, "Titulo válido", "Descrição válida do plano de treino.", "EXPERT", List.of(1)
         );
 
         mockMvc.perform(post(URL)
@@ -179,12 +182,63 @@ class CadastrarPlanoTreinoIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @DisplayName("Deve retornar 400 quando equipamentosIds for nulo")
+    @DataSet(value = "datasets/planos-treino-vazio.yml")
+    @ExpectedDataSet(value = "datasets/planos-treino-vazio.yml")
+    void deveRetornar400QuandoEquipamentosIdsNulo() throws Exception {
+        PlanoTreinoRequestDTO dto = new PlanoTreinoRequestDTO(
+                1L, 10L, "Titulo válido", "Descrição válida.", "INICIANTE", null
+        );
+
+        mockMvc.perform(post(URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detalhes[*].campo", hasItem("equipamentosIds")))
+                .andExpect(jsonPath("$.detalhes[*].mensagem", hasItem("O campo 'equipamentosIds' é obrigatório")));
+    }
+
+    @Test
+    @DisplayName("Deve retornar 400 quando equipamentosIds for vazio")
+    @DataSet(value = "datasets/planos-treino-vazio.yml")
+    @ExpectedDataSet(value = "datasets/planos-treino-vazio.yml")
+    void deveRetornar400QuandoEquipamentosIdsVazio() throws Exception {
+        PlanoTreinoRequestDTO dto = new PlanoTreinoRequestDTO(
+                1L, 10L, "Titulo válido", "Descrição válida.", "INICIANTE", List.of()
+        );
+
+        mockMvc.perform(post(URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detalhes[*].campo", hasItem("equipamentosIds")))
+                .andExpect(jsonPath("$.detalhes[*].mensagem", hasItem("O campo 'equipamentosIds' é obrigatório")));
+    }
+
+    @Test
+    @DisplayName("Deve retornar 404 quando um id de equipamento não existir")
+    @DataSet(value = "datasets/planos-treino-vazio.yml")
+    @ExpectedDataSet(value = "datasets/planos-treino-vazio.yml")
+    void deveRetornar404QuandoEquipamentoNaoExistir() throws Exception {
+        PlanoTreinoRequestDTO dto = new PlanoTreinoRequestDTO(
+                1L, 10L, "Titulo válido", "Descrição válida.", "INICIANTE", List.of(1, 999)
+        );
+
+        mockMvc.perform(post(URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.erro").value("Equipamento não encontrado com id: 999"));
+    }
+
+    @Test
     @DisplayName("Deve retornar 404 quando idProfessorCriador não existir")
     @DataSet(value = "datasets/planos-treino-vazio.yml")
     @ExpectedDataSet(value = "datasets/planos-treino-vazio.yml")
     void deveRetornar404QuandoProfessorNaoExistir() throws Exception {
         PlanoTreinoRequestDTO dto = new PlanoTreinoRequestDTO(
-                1L, 999L, "Titulo válido", "Descrição válida do plano de treino.", "INICIANTE"
+                1L, 999L, "Titulo válido", "Descrição válida do plano de treino.", "INICIANTE", List.of(1)
         );
 
         mockMvc.perform(post(URL)
@@ -200,7 +254,7 @@ class CadastrarPlanoTreinoIntegrationTest extends BaseIntegrationTest {
     @DataSet(value = "datasets/plano-treino-existente.yml")
     void deveRetornar403QuandoPerfilAdmin() throws Exception {
         PlanoTreinoRequestDTO dto = new PlanoTreinoRequestDTO(
-                1L, 11L, "Titulo válido", "Descrição válida do plano de treino.", "INICIANTE"
+                1L, 11L, "Titulo válido", "Descrição válida do plano de treino.", "INICIANTE", List.of(1)
         );
 
         mockMvc.perform(post(URL)
@@ -217,7 +271,7 @@ class CadastrarPlanoTreinoIntegrationTest extends BaseIntegrationTest {
     @DataSet(value = "datasets/plano-treino-existente.yml")
     void deveRetornar403QuandoPerfilAluno() throws Exception {
         PlanoTreinoRequestDTO dto = new PlanoTreinoRequestDTO(
-                1L, 12L, "Titulo válido", "Descrição válida do plano de treino.", "INICIANTE"
+                1L, 12L, "Titulo válido", "Descrição válida do plano de treino.", "INICIANTE", List.of(1)
         );
 
         mockMvc.perform(post(URL)
@@ -235,7 +289,7 @@ class CadastrarPlanoTreinoIntegrationTest extends BaseIntegrationTest {
     @ExpectedDataSet(value = "datasets/planos-treino-vazio.yml")
     void deveRetornar404QuandoTipoTreinoNaoExistir() throws Exception {
         PlanoTreinoRequestDTO dto = new PlanoTreinoRequestDTO(
-                999L, 10L, "Titulo válido", "Descrição válida do plano de treino.", "INICIANTE"
+                999L, 10L, "Titulo válido", "Descrição válida do plano de treino.", "INICIANTE", List.of(1)
         );
 
         mockMvc.perform(post(URL)

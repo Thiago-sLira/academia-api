@@ -4,7 +4,7 @@ import com.academia.api.common.FiltroPaginado;
 import com.academia.api.models.enums.CategoriaEquipamento;
 
 public record EquipamentoFiltroDTO(
-        Long id,
+        Integer id,
         String nome,
         CategoriaEquipamento categoria,
         Integer paginaAtual,

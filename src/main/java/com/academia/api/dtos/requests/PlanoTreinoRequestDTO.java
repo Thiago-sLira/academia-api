@@ -3,8 +3,11 @@ package com.academia.api.dtos.requests;
 import com.academia.api.models.enums.NivelExperiencia;
 import com.academia.api.validation.ValueOfEnum;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import java.util.List;
 
 public record PlanoTreinoRequestDTO(
 
@@ -24,7 +27,10 @@ public record PlanoTreinoRequestDTO(
 
         @NotBlank(message = "O campo 'nivelRecomendado' é obrigatório")
         @ValueOfEnum(enumClass = NivelExperiencia.class)
-        String nivelRecomendado
+        String nivelRecomendado,
+
+        @NotEmpty(message = "O campo 'equipamentosIds' é obrigatório")
+        List<Integer> equipamentosIds
 
 ) {
 }

@@ -1,5 +1,12 @@
 tb_aluno_treino: []
 
+tb_equipamento:
+  - id_equipamento: 1
+    nome: "Supino Reto"
+    categoria: "SUPERIORES"
+    descricao: "Banco para supino com barra olímpica"
+    ativo: true
+
 tb_tipo_treino:
   - id_tipo_treino: 1
     nome: "Musculação"
@@ -102,3 +109,29 @@ tb_plano_treino:
     descricao: "Plano de cardio para avançados número 12"
     nivel_recomendado: "AVANCADO"
     ativo: true
+
+tb_plano_equipamento:
+  - id_plano: 1
+    id_equipamento: 1
+  - id_plano: 2
+    id_equipamento: 1
+  - id_plano: 3
+    id_equipamento: 1
+  - id_plano: 4
+    id_equipamento: 1
+  - id_plano: 5
+    id_equipamento: 1
+  - id_plano: 6
+    id_equipamento: 1
+  - id_plano: 7
+    id_equipamento: 1
+  - id_plano: 8
+    id_equipamento: 1
+  - id_plano: 9
+    id_equipamento: 1
+  - id_plano: 10
+    id_equipamento: 1
+  - id_plano: 11
+    id_equipamento: 1
+  - id_plano: 12
+    id_equipamento: 1

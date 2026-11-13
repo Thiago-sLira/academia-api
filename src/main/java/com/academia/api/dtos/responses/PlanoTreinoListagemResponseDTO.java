@@ -17,9 +17,10 @@ public record PlanoTreinoListagemResponseDTO(
         String nomeTipoTreino,
         Long idProfessorCriador,
         String nomeProfessor,
-        List<AlunoResumoDTO> alunosVinculados
+        List<AlunoResumoDTO> alunosVinculados,
+        List<EquipamentoResumoDTO> equipamentos
 ) {
-    public PlanoTreinoListagemResponseDTO(PlanoTreino plano) {
+    public PlanoTreinoListagemResponseDTO(PlanoTreino plano, List<AlunoResumoDTO> alunosVinculados, List<EquipamentoResumoDTO> equipamentos) {
         this(
                 plano.getId(),
                 plano.getTitulo(),
@@ -31,23 +32,8 @@ public record PlanoTreinoListagemResponseDTO(
                 plano.getTipoTreino().getNome(),
                 plano.getProfessorCriador().getId(),
                 plano.getProfessorCriador().getNome(),
-                List.of()
-        );
-    }
-
-    public PlanoTreinoListagemResponseDTO(PlanoTreino plano, List<AlunoResumoDTO> alunosVinculados) {
-        this(
-                plano.getId(),
-                plano.getTitulo(),
-                plano.getDescricao(),
-                plano.getNivelRecomendado(),
-                plano.getAtivo(),
-                plano.getCriadoEm(),
-                plano.getTipoTreino().getId(),
-                plano.getTipoTreino().getNome(),
-                plano.getProfessorCriador().getId(),
-                plano.getProfessorCriador().getNome(),
-                alunosVinculados
+                alunosVinculados,
+                equipamentos
         );
     }
 }

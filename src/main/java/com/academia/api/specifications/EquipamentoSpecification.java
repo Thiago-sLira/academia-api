@@ -14,7 +14,7 @@ public class EquipamentoSpecification {
     }
 
     public static Specification<Equipamento> filtrar(
-            Long id,
+            Integer id,
             String nome,
             CategoriaEquipamento categoria
     ) {

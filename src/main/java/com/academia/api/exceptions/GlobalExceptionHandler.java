@@ -136,6 +136,12 @@ public class GlobalExceptionHandler {
                 .body(new ErroRespostaDTO(HttpStatus.FORBIDDEN.value(), ex.getMessage()));
     }
 
+    @ExceptionHandler(EquipamentoNaoEncontradoException.class)
+    public ResponseEntity<ErroRespostaDTO> handleEquipamentoNaoEncontrado(EquipamentoNaoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErroRespostaDTO(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
+    }
+
     @ExceptionHandler(AlunoComTreinoAtivoException.class)
     public ResponseEntity<ErroRespostaDTO> handleAlunoComTreinoAtivo(AlunoComTreinoAtivoException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
