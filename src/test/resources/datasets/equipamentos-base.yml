@@ -1,0 +1,26 @@
+tb_equipamento:
+  - id_equipamento: 1
+    nome: "Supino Reto"
+    categoria: "SUPERIORES"
+    descricao: "Banco para supino com barra olímpica"
+    ativo: true
+  - id_equipamento: 2
+    nome: "Leg Press 45"
+    categoria: "INFERIORES"
+    descricao: "Máquina de leg press 45 graus com anilhas"
+    ativo: true
+  - id_equipamento: 3
+    nome: "Esteira Ergométrica"
+    categoria: "CARDIO"
+    descricao: "Esteira profissional com inclinação eletrônica"
+    ativo: true
+  - id_equipamento: 4
+    nome: "Halter 12kg"
+    categoria: "PESO_LIVRE"
+    descricao: "Par de halteres emborrachados de 12kg"
+    ativo: true
+  - id_equipamento: 5
+    nome: "Cinto de Agachamento"
+    categoria: "ACESSORIO"
+    descricao: "Cinto de couro para suporte lombar"
+    ativo: false

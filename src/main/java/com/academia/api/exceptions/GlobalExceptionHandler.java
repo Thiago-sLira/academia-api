@@ -6,6 +6,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,13 +15,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErroRespostaDTO> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+    @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
+    public ResponseEntity<ErroRespostaDTO> handleMethodArgumentNotValid(BindException ex) {
         List<CampoErroDTO> detalhes = new ArrayList<>();
 
         for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
@@ -32,6 +35,11 @@ public class GlobalExceptionHandler {
                         campo,
                         String.format("Valor inválido para o campo '%s'", campo),
                         defaultMessage
+                ));
+            } else if (fieldError.isBindingFailure() || (defaultMessage != null && defaultMessage.contains("Failed to convert"))) {
+                detalhes.add(new CampoErroDTO(
+                        campo,
+                        String.format("Valor inválido para o campo '%s'", campo)
                 ));
             } else {
                 detalhes.add(new CampoErroDTO(campo, defaultMessage));
@@ -65,9 +73,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErroRespostaDTO> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        String mensagem = String.format(
-                "O parâmetro '%s' recebeu o valor '%s', que não é um número inteiro válido.",
-                ex.getName(), ex.getValue());
+        String mensagem;
+        if (ex.getRequiredType() != null && ex.getRequiredType().isEnum()) {
+            Object[] constants = ex.getRequiredType().getEnumConstants();
+            String aceitos = Arrays.stream(constants).map(Object::toString).collect(Collectors.joining(", "));
+            mensagem = String.format("Valor inválido '%s' para o parâmetro '%s'. Valores aceitos: %s", ex.getValue(), ex.getName(), aceitos);
+        } else {
+            mensagem = String.format(
+                    "O parâmetro '%s' recebeu o valor '%s', que não é um número inteiro válido.",
+                    ex.getName(), ex.getValue());
+        }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErroRespostaDTO(HttpStatus.BAD_REQUEST.value(), mensagem));
     }
