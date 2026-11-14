@@ -4,6 +4,8 @@ import com.academia.api.models.enums.CategoriaEquipamento;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.time.LocalDateTime;
 
@@ -25,7 +27,8 @@ public class Equipamento {
     private String nome;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @Column(nullable = false, columnDefinition = "categoria_equipamento")
     private CategoriaEquipamento categoria;
 
     @Column(length = 500)

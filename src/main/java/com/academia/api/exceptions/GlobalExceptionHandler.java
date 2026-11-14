@@ -142,6 +142,12 @@ public class GlobalExceptionHandler {
                 .body(new ErroRespostaDTO(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
     }
 
+    @ExceptionHandler(EquipamentoDuplicadoException.class)
+    public ResponseEntity<ErroRespostaDTO> handleEquipamentoDuplicado(EquipamentoDuplicadoException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErroRespostaDTO(HttpStatus.CONFLICT.value(), ex.getMessage()));
+    }
+
     @ExceptionHandler(AlunoComTreinoAtivoException.class)
     public ResponseEntity<ErroRespostaDTO> handleAlunoComTreinoAtivo(AlunoComTreinoAtivoException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
