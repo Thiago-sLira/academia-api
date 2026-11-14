@@ -2,6 +2,7 @@ package com.academia.api.controllers;
 
 import com.academia.api.dtos.requests.EquipamentoFiltroDTO;
 import com.academia.api.dtos.requests.EquipamentoRequestDTO;
+import com.academia.api.dtos.requests.EquipamentoUpdateRequestDTO;
 import com.academia.api.dtos.responses.EquipamentoPaginadoResponseDTO;
 import com.academia.api.dtos.responses.EquipamentoResponseDTO;
 import com.academia.api.services.EquipamentoService;
@@ -14,7 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,5 +40,12 @@ public class EquipamentoController {
     @Operation(summary = "Cadastrar um novo equipamento")
     public ResponseEntity<EquipamentoResponseDTO> cadastrar(@RequestBody @Valid EquipamentoRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.cadastrar(dto));
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Atualizar um equipamento")
+    public ResponseEntity<EquipamentoResponseDTO> atualizar(@PathVariable Integer id,
+                                                            @RequestBody @Valid EquipamentoUpdateRequestDTO dto) {
+        return ResponseEntity.ok(service.atualizar(id, dto));
     }
 }

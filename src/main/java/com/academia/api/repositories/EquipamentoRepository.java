@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface EquipamentoRepository extends JpaRepository<Equipamento, Integer>, JpaSpecificationExecutor<Equipamento> {
 
     boolean existsByNomeIgnoreCase(String nome);
+
+    boolean existsByNomeIgnoreCaseAndIdNot(String nome, Integer id);
 }

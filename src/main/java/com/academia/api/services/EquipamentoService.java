@@ -2,9 +2,11 @@ package com.academia.api.services;
 
 import com.academia.api.dtos.requests.EquipamentoFiltroDTO;
 import com.academia.api.dtos.requests.EquipamentoRequestDTO;
+import com.academia.api.dtos.requests.EquipamentoUpdateRequestDTO;
 import com.academia.api.dtos.responses.EquipamentoPaginadoResponseDTO;
 import com.academia.api.dtos.responses.EquipamentoResponseDTO;
 import com.academia.api.exceptions.EquipamentoDuplicadoException;
+import com.academia.api.exceptions.EquipamentoNaoEncontradoException;
 import com.academia.api.models.entities.Equipamento;
 import com.academia.api.models.enums.CategoriaEquipamento;
 import com.academia.api.repositories.EquipamentoRepository;
@@ -56,6 +58,25 @@ public class EquipamentoService {
                 .descricao(dto.descricao())
                 .ativo(dto.ativo() != null ? dto.ativo() : true)
                 .build();
+
+        return new EquipamentoResponseDTO(repository.save(equipamento));
+    }
+
+    @Transactional
+    public EquipamentoResponseDTO atualizar(Integer id, EquipamentoUpdateRequestDTO dto) {
+        Equipamento equipamento = repository.findById(id)
+                .orElseThrow(() -> new EquipamentoNaoEncontradoException(id));
+
+        String nome = dto.nome().strip();
+
+        if (repository.existsByNomeIgnoreCaseAndIdNot(nome, id)) {
+            throw new EquipamentoDuplicadoException("Já existe outro equipamento cadastrado com este nome");
+        }
+
+        equipamento.setNome(nome);
+        equipamento.setCategoria(EnumNormalizer.parseEnum(CategoriaEquipamento.class, dto.categoria()).orElse(null));
+        equipamento.setDescricao(dto.descricao());
+        equipamento.setAtivo(dto.ativo());
 
         return new EquipamentoResponseDTO(repository.save(equipamento));
     }
